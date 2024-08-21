@@ -28,10 +28,12 @@ export class Canvas {
     this.ctx.fillRect(0, 0, this.pixelWidth, this.pixelHeight);
 
     this.data = [...Array(this.width)].map(() => Array(this.height).fill([255, 255, 255, 255]));
-    this.steps = [];
-    this.redo_arr = [];
+
+    this.redoStack = [];
+    this.undoStack = [];
     this.snapshots = [];
-    this.lc = [];
+    this.drawLineCoordinates = [];
+
     this.setupEventListeners();
   }
 
@@ -162,8 +164,8 @@ export class Canvas {
    */
   trackSteps(x, y) {
     const currentStep = [x, y, this.color, this.ctx.globalAlpha];
-    if (this.steps.length === 0 || !this.isLastStepEqual(currentStep)) {
-      this.steps.push(currentStep);
+    if (this.redoStack.length === 0 || !this.isLastStepEqual(currentStep)) {
+      this.redoStack.push(currentStep);
     }
   }
 
@@ -174,7 +176,7 @@ export class Canvas {
    * @returns {boolean} - Returns true if the current step is equal to the last step, false otherwise.
    */
   isLastStepEqual(step) {
-    const lastStep = this.steps[this.steps.length - 1];
+    const lastStep = this.redoStack.at(-1);
     return JSON.stringify(lastStep) === JSON.stringify(step);
   }
 
@@ -182,10 +184,10 @@ export class Canvas {
    * Draws a line between two points on the canvas.
    */
   drawLine(x, y) {
-    this.lc.push(new Point(x, y));
-    if (this.lc.length === 2) {
-      const lp = line(this.lc[0], this.lc[1]);
-      this.lc = [];
+    this.drawLineCoordinates.push(new Point(x, y));
+    if (this.drawLineCoordinates.length === 2) {
+      const lp = line(this.drawLineCoordinates[0], this.drawLineCoordinates[1]);
+      this.drawLineCoordinates = [];
       lp.forEach((p) => this.draw(p.x, p.y));
     }
   }
@@ -311,28 +313,22 @@ export class Canvas {
     gif.render();
   }
 
-  /**
-   * Undoes the last drawing action by restoring the previous state.
-   */
   undo() {
     this.clearCanvas();
 
-    this.redo_arr.push(this.steps.pop());
+    this.undoStack.push(this.redoStack.pop());
 
-    this.steps.forEach((step) => {
+    this.redoStack.forEach((step) => {
       this.setcolor(step[2]);
       this.ctx.globalAlpha = step[3];
       this.draw(step[0], step[1], true);
     });
   }
 
-  /**
-   * Redoes the last undone drawing action.
-   */
   redo() {
-    this.steps.push(this.redo_arr.pop());
+    this.redoStack.push(this.undoStack.pop());
 
-    this.steps.forEach((step) => {
+    this.redoStack.forEach((step) => {
       this.setcolor(step[2]);
       this.ctx.globalAlpha = step[3];
 
@@ -350,13 +346,14 @@ export class Canvas {
       width: this.width,
       height: this.height,
       url: this.canvas.toDataURL(),
-      steps: this.steps,
-      redo_arr: this.redo_arr,
+      steps: this.redoStack,
+      redo_arr: this.undoStack,
       dim: window.dim,
     };
     localStorage.setItem("pc-canvas-data", JSON.stringify(currentData));
   }
 
+  //#region import image
   importImage() {
     const inputFile = document.createElement("input");
     inputFile.type = "file";
@@ -417,4 +414,5 @@ export class Canvas {
 
     return avgColor.map((value) => Math.floor(value / count));
   }
+  //#endregion import
 }
