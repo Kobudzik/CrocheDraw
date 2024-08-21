@@ -12,22 +12,26 @@ export class Canvas {
     this.canvas = document.querySelector("#canvas");
     this.canvas.width = 10 * width;
     this.canvas.height = 10 * height;
-    this.width = width;
-    this.height = height;
     this.canvas.style.display = "block";
     this.canvas.style.height = Math.floor((height / width) * this.canvas.clientWidth) + "px";
-    this.w = +this.canvas.width;
-    this.h = +this.canvas.height;
+    this.width = width;
+    this.height = height;
+    this.pixelWidth = +this.canvas.width;
+    this.pixelHeight = +this.canvas.height;
     this.ctx = this.canvas.getContext("2d");
     this.ctx.fillStyle = "white";
     this.ctx.globalAlpha = 1;
-    this.ctx.fillRect(0, 0, this.w, this.h);
+    this.ctx.fillRect(0, 0, this.pixelWidth, this.pixelHeight);
     this.data = [...Array(this.width)].map(() => Array(this.height).fill([255, 255, 255, 255]));
     this.steps = [];
     this.redo_arr = [];
     this.snapshots = [];
     this.setupEventListeners();
     this.lc = [];
+
+    let canvas2 = document.querySelector("#canvas2");
+    canvas2.width = 10 * width * 2;
+    canvas2.height = 10 * height * 2;
   }
 
   /**
@@ -147,8 +151,8 @@ export class Canvas {
    * Renders a pixel on the canvas at the specified coordinates.
    */
   renderPixel(x, y) {
-    const pixelWidth = Math.floor(this.w / this.width);
-    const pixelHeight = Math.floor(this.h / this.height);
+    const pixelWidth = Math.floor(this.pixelWidth / this.width);
+    const pixelHeight = Math.floor(this.pixelHeight / this.height);
     this.ctx.fillRect(Math.floor(x * pixelWidth), Math.floor(y * pixelHeight), pixelWidth, pixelHeight);
   }
 
@@ -254,7 +258,7 @@ export class Canvas {
 
   clearCanvas() {
     this.ctx.fillStyle = "white";
-    this.ctx.fillRect(0, 0, this.w, this.h);
+    this.ctx.fillRect(0, 0, this.pixelWidth, this.pixelHeight);
     this.data = [...Array(this.width)].map(() => Array(this.height).fill([255, 255, 255, 255]));
     this.setcolor(this.color);
     this.setmode(Tool.pen);
@@ -378,10 +382,10 @@ export class Canvas {
 
     image.onload = () => {
       const tempCanvas = document.createElement("canvas");
-      tempCanvas.width = this.w;
-      tempCanvas.height = this.h;
+      tempCanvas.width = this.pixelWidth;
+      tempCanvas.height = this.pixelHeight;
       const tempCtx = tempCanvas.getContext("2d");
-      tempCtx.drawImage(image, 0, 0, this.w, this.h);
+      tempCtx.drawImage(image, 0, 0, this.pixelWidth, this.pixelHeight);
 
       this.updateCanvasWithImage(tempCtx);
     };

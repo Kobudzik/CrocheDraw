@@ -12,7 +12,47 @@ window.onload = function () {
   renderColors();
 
   document.querySelector("#palette").addEventListener("contextmenu", (e) => e.preventDefault());
+
+  doGrid();
 };
+
+function doGrid() {
+  alert("doing grid");
+  // Select the canvas element and get the drawing context
+  const canvas = document.getElementById("canvas2");
+  const ctx = canvas.getContext("2d");
+
+  // Set the grid size
+  const gridSize = 10 * 2; // The size of each grid cell
+
+  // Function to draw the grid
+  function drawGrid() {
+    // Clear the canvas before drawing the grid
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = "#gray"; // Color of the grid lines
+    ctx.lineWidth = 1; // Thickness of the grid lines
+
+    // Draw vertical lines
+    for (let x = 0; x <= canvas.width; x += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.height);
+      ctx.stroke();
+    }
+
+    // Draw horizontal lines
+    for (let y = 0; y <= canvas.height; y += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+      ctx.stroke();
+    }
+  }
+
+  // Call the function to draw the grid
+  drawGrid();
+}
 
 function loadProject(canvasData) {
   const data = JSON.parse(canvasData);

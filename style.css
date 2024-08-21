@@ -126,6 +126,20 @@ body {
   image-rendering: crisp-edges;
 }
 
+/* Canvas */
+#canvas2 {
+  box-shadow: 00 10px0 rgba(0, 0, 0, 0.5);
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 75%;
+  max-width: 550px;
+  touch-action: none;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+}
+
 /* Toolbar */
 #toolbar {
   position: fixed;
