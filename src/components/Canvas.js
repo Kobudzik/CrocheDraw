@@ -13,19 +13,16 @@ export class Canvas {
     this.canvas.style.display = "block";
     this.canvas.style.height = Math.floor((height / width) * this.canvas.clientWidth) + "px";
 
-    this.canvas.width = 10 * width;
+    this.canvas.width = 10 * width; //width of the canvas drawing area in pixels.
     this.canvas.height = 10 * height;
 
-    this.width = width;
+    this.width = width; //number of grid cells
     this.height = height;
-
-    this.pixelWidth = this.canvas.width;
-    this.pixelHeight = this.canvas.height;
 
     this.ctx = this.canvas.getContext("2d");
     this.ctx.fillStyle = "white";
     this.ctx.globalAlpha = 1;
-    this.ctx.fillRect(0, 0, this.pixelWidth, this.pixelHeight);
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.data = [...Array(this.width)].map(() => Array(this.height).fill([255, 255, 255, 255]));
 
@@ -148,11 +145,8 @@ export class Canvas {
    * Renders a pixel on the canvas at the specified coordinates.
    */
   renderPixel(x, y) {
-    console.log("pixelHeight", this.pixelHeight);
-    console.log("height", this.height);
-    console.log("canvas.height", this.canvas.height);
-    const renderPixelWidth = Math.floor(this.pixelWidth / this.width);
-    const renderPixelHeight = Math.floor(this.pixelHeight / this.height);
+    const renderPixelWidth = Math.floor(this.canvas.width / this.width);
+    const renderPixelHeight = Math.floor(this.canvas.height / this.height);
 
     const renderX = Math.floor(x * renderPixelWidth);
     const renderY = Math.floor(y * renderPixelHeight);
@@ -262,7 +256,7 @@ export class Canvas {
 
   clearCanvas() {
     this.ctx.fillStyle = "white";
-    this.ctx.fillRect(0, 0, this.pixelWidth, this.pixelHeight);
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.data = [...Array(this.width)].map(() => Array(this.height).fill([255, 255, 255, 255]));
     this.setcolor(this.color);
     this.setmode(AvailableTools.pen);
@@ -381,10 +375,10 @@ export class Canvas {
 
     image.onload = () => {
       const tempCanvas = document.createElement("canvas");
-      tempCanvas.width = this.pixelWidth;
-      tempCanvas.height = this.pixelHeight;
+      tempCanvas.width = this.canvas.width;
+      tempCanvas.height = this.canvas.height;
       const tempCtx = tempCanvas.getContext("2d");
-      tempCtx.drawImage(image, 0, 0, this.pixelWidth, this.pixelHeight);
+      tempCtx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
 
       this.updateCanvasWithImage(tempCtx);
     };
