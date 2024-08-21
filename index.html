@@ -1,123 +1,104 @@
 <html>
+  <head>
+    <title>Pixellate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Pixellate: A Pixel Art Editor" />
+    <meta property="og:description" content="A pixel Art & Animation Creation Tool Built using HTML5 Canvas. It is a Progressive Web App (PWA) with offline compatibility. It is mobile-friendly and is very easy to use." />
+    <meta name="keywords" content="Pixellate, pixel-art" />
+    <meta name="news_keywords" content="Pixellate, pixel-art" />
+    <meta name="language" content="English" />
+    <meta property="og:url" content="https://github.com/RainboeStrykr/Pixellate" />
+    <meta property="og:site_name" content="PixelCraft" />
+    <meta property="article:tag" content="PixelCraft" />
+    <meta property="article:tag" content="pixel-art" />
+    <meta property="article:published_time" content="2020-04-22T08:34:48+00:00" />
+    <meta property="article:modified_time" content="2020-04-22T08:34:51+00:00" />
+    <meta property="og:updated_time" content="2020-04-22T08:34:51+00:00" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" content="A pixel Art & Animation Creation Tool Built using HTML5 Canvas. It is a Progressive Web App (PWA) with offline compatibility. It is mobile-friendly and is very easy to use." />
+    <meta name="twitter:title" content="Pixellate: A Pixel Art Editor" />
+    <meta name="twitter:image" content="https://cdn.discordapp.com/attachments/859781721107726386/885861201681195029/unknown.png" />
+    <link rel="shortcut icon" type="image/png" href="icons/logo.png" />
+    <link rel="manifest" href="manifest.json" />
+    <script src="https://kit.fontawesome.com/473e8f3a80.js" crossorigin="anonymous"></script>
+    <script src="lib/Matrix.js" async></script>
+    <script src="lib/Shapes.js" async></script>
+    <script src="lib/Transformation.js" async></script>
+    <script src="lib/gif.js"></script>
+    <script src="script.js"></script>
 
-<head>
-  <title>Pixellate</title>
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
-  <meta property="og:locale"
-        content="en_US" />
-  <meta property="og:title"
-        content="Pixellate: A Pixel Art Editor" />
-  <meta property="og:description"
-        content="A pixel Art & Animation Creation Tool Built using HTML5 Canvas. It is a Progressive Web App (PWA) with offline compatibility. It is mobile-friendly and is very easy to use." />
-  <meta name="keywords"
-        content="Pixellate, pixel-art" />
-  <meta name="news_keywords"
-        content="Pixellate, pixel-art" />
-  <meta name="language"
-        content="English">
-  <meta property="og:url"
-        content="https://github.com/RainboeStrykr/Pixellate" />
-  <meta property="og:site_name"
-        content="PixelCraft" />
-  <meta property="article:tag"
-        content="PixelCraft" />
-  <meta property="article:tag"
-        content="pixel-art" />
-  <meta property="article:published_time"
-        content="2020-04-22T08:34:48+00:00" />
-  <meta property="article:modified_time"
-        content="2020-04-22T08:34:51+00:00" />
-  <meta property="og:updated_time"
-        content="2020-04-22T08:34:51+00:00" />
-  <meta name="twitter:card"
-        content="summary_large_image" />
-  <meta name="twitter:description"
-        content="A pixel Art & Animation Creation Tool Built using HTML5 Canvas. It is a Progressive Web App (PWA) with offline compatibility. It is mobile-friendly and is very easy to use." />
-  <meta name="twitter:title"
-        content="Pixellate: A Pixel Art Editor" />
-  <meta name="twitter:image"
-        content="https://cdn.discordapp.com/attachments/859781721107726386/885861201681195029/unknown.png" />
-  <link rel="shortcut icon"
-        type="image/png"
-        href="icons/logo.png" />
-  <link rel="manifest"
-        href="manifest.json">
-  <script src="https://kit.fontawesome.com/473e8f3a80.js"
-          crossorigin="anonymous"></script>
-  <script src="lib/Matrix.js"
-          async></script>
-  <script src="lib/Shapes.js"
-          async></script>
-  <script src="lib/Transformation.js"
-          async></script>
-  <script src="lib/gif.js"></script>
-  <script src="script.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-  <link rel="stylesheet"
-        href="style.css">
-
-</head>
-
-<body>
-  <div class="menubtn">☰</div>
-  <ul class="menu">
-    <li onclick="newProject()">New</li>
-    <li onclick="board.save()">Save image</li>
-    <li onclick="install()">Install PWA</li>
-    <li><a href="https://github.com/rainboestrykr/pixellate"
-         target="_blank"><i class="fab fa-github"></i>Github</a></li>
-  </ul>
-  <div id="popup">
-    <h3>Select the Dimensions Of the grid</h3>
-    <input type="text"
-           id="width"
-           value="16">X<input type="text"
-           id="height"
-           value="16">
-    <button id="close">OK</button>
-  </div>
-  <div id="frames"
-       onblur="Frames.close()"
-       tabindex="0">
-    <div class="btn"
-         style="left: 10px;"
-         onclick="document.querySelector('#frames #gallery').scrollLeft-=100;"><i class="fa fa-chevron-left"></i></div>
-    <div class="btn"
-         style="right: 10px;"
-         onclick="document.querySelector('#frames #gallery').scrollLeft+=100;"><i class="fa fa-chevron-right"></i></div>
-    <div id="gallery"></div>
-  </div>
-  <canvas id="canvas"></canvas>
-  <div id="toolbar">
-    <span class="item"
-          onclick="board.setmode(0)"
-          style="background-color: grey;"><i class="fas fa-pencil-alt"></i></span>
-    <span class="item"
-          onclick="board.setmode(1)"><i class="fas fa-eraser"></i></span>
-    <span class="item"
-          onclick="board.setmode(2)"><i class="fas fa-fill"></i></span>
-    <span class="item"
-          onclick="board.setmode(3)"><i class="fas fa-slash"></i></span>
-    <span class="item"
-          onclick="board.setmode(4)"><i class="far fa-circle"></i></span>
-    <span class="item"
-          onclick="board.setmode(5)"><i class="far fa-circle"
-         style="transform: rotateX(45deg);"></i></span>
-    <span class="item"
-          onclick="board.addFrame()"><i class="fas fa-plus"></i></span>
-    <span class="item"
-          onclick="board.undo()"><i class="fas fa-undo"></i></span>
-    <span class="item"
-          onclick="board.redo()"><i class="fas fa-redo"></i></span>
-    <span class="item"
-          onclick="board.clear()"><i class="fas fa-trash"></i></span>
-    <span class="item"
-          onclick="board.addImage()"><i class="fa fa-upload"></i></span>
-    <span class="item"
-          onclick="Frames.open()"><i class="fas fa-eye"></i></span>
-  </div>
-  <div id="palette"></div>
-</body>
-
+  <body>
+    <div class="menubtn">☰</div>
+    <ul class="menu">
+      <li onclick="newProject()">New</li>
+      <li onclick="board.save()">Save image</li>
+      <li onclick="install()">Install PWA</li>
+      <li>
+        <a href="https://github.com/rainboestrykr/pixellate" target="_blank">
+          <i class="fab fa-github"></i>
+          Github
+        </a>
+      </li>
+    </ul>
+    <div id="popup">
+      <h3>Select the Dimensions Of the grid</h3>
+      <input type="text" id="width" value="16" />
+      X
+      <input type="text" id="height" value="16" />
+      <button id="close">OK</button>
+    </div>
+    <div id="frames" onblur="Frames.close()" tabindex="0">
+      <div class="btn" style="left: 10px" onclick="document.querySelector('#frames #gallery').scrollLeft-=100;">
+        <i class="fa fa-chevron-left"></i>
+      </div>
+      <div class="btn" style="right: 10px" onclick="document.querySelector('#frames #gallery').scrollLeft+=100;">
+        <i class="fa fa-chevron-right"></i>
+      </div>
+      <div id="gallery"></div>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div id="toolbar">
+      <span class="item" onclick="board.setmode(0)" style="background-color: grey">
+        <i class="fas fa-pencil-alt"></i>
+      </span>
+      <span class="item" onclick="board.setmode(1)">
+        <i class="fas fa-eraser"></i>
+      </span>
+      <span class="item" onclick="board.setmode(2)">
+        <i class="fas fa-fill"></i>
+      </span>
+      <span class="item" onclick="board.setmode(3)">
+        <i class="fas fa-slash"></i>
+      </span>
+      <span class="item" onclick="board.setmode(4)">
+        <i class="far fa-circle"></i>
+      </span>
+      <span class="item" onclick="board.setmode(5)">
+        <i class="far fa-circle" style="transform: rotateX(45deg)"></i>
+      </span>
+      <span class="item" onclick="board.addFrame()">
+        <i class="fas fa-plus"></i>
+      </span>
+      <span class="item" onclick="board.undo()">
+        <i class="fas fa-undo"></i>
+      </span>
+      <span class="item" onclick="board.redo()">
+        <i class="fas fa-redo"></i>
+      </span>
+      <span class="item" onclick="board.clear()">
+        <i class="fas fa-trash"></i>
+      </span>
+      <span class="item" onclick="board.addImage()">
+        <i class="fa fa-upload"></i>
+      </span>
+      <span class="item" onclick="Frames.open()">
+        <i class="fas fa-eye"></i>
+      </span>
+    </div>
+    <div id="palette"></div>
+  </body>
 </html>
