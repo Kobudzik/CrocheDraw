@@ -26,9 +26,15 @@
     <script src="lib/Shapes.js" async></script>
     <script src="lib/Transformation.js" async></script>
     <script src="lib/gif.js"></script>
-    <script src="script.js"></script>
-
+    <script type="module" src="src/app.js"></script>
     <link rel="stylesheet" href="style.css" />
+
+    <script type="module">
+      import { newProject } from "./src/app.js";
+      import { act } from "./src/helpers/utils.js";
+      window.newProject = newProject;
+      window.act = act;
+    </script>
   </head>
 
   <body>

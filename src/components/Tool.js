@@ -1,0 +1,14 @@
+export const Tool = {
+  pen: 0,
+  eraser: 1,
+  fillBucket: 2,
+  line: 3,
+  circle: 4,
+  ellipse: 5,
+  addFrame: 6,
+  undo: 7,
+  redo: 8,
+  clearCanvas: 9,
+};
+
+export let tools = [true, false, false, false, false, false];

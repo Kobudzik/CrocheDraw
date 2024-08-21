@@ -315,7 +315,6 @@ window.onload = function () {
   let canvasData = localStorage.getItem("pc-canvas-data");
   if (canvasData) {
     data = JSON.parse(canvasData);
-    console.log(data);
     window.colors = data.colors;
     window.board = new Canvas(data.width, data.height);
     let img = new Image();
