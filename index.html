@@ -32,10 +32,10 @@
     <script type="module">
       import { newProject } from "./src/app.js";
       import { setActiveColor } from "./src/helpers/utils.js";
-      import { Frames } from "./src/components/Frames.js";
+      import { Snapshots } from "./src/components/Snapshots.js";
       window.newProject = newProject;
       window.setActiveColor = setActiveColor;
-      window.frames = Frames;
+      window.snapshots = Snapshots;
     </script>
   </head>
 
@@ -59,11 +59,11 @@
       <input type="text" id="height" value="16" />
       <button id="close">OK</button>
     </div>
-    <div id="frames" onblur="frames.close()" tabindex="0">
-      <div class="btn" style="left: 10px" onclick="document.querySelector('#frames #gallery').scrollLeft-=100;">
+    <div id="snapshots" onblur="snapshots.close()" tabindex="0">
+      <div class="btn" style="left: 10px" onclick="document.querySelector('#snapshots #gallery').scrollLeft-=100;">
         <i class="fa fa-chevron-left"></i>
       </div>
-      <div class="btn" style="right: 10px" onclick="document.querySelector('#frames #gallery').scrollLeft+=100;">
+      <div class="btn" style="right: 10px" onclick="document.querySelector('#snapshots #gallery').scrollLeft+=100;">
         <i class="fa fa-chevron-right"></i>
       </div>
       <div id="gallery"></div>
@@ -103,7 +103,7 @@
       <span class="item" onclick="board.addImage()">
         <i class="fa fa-upload"></i>
       </span>
-      <span class="item" onclick="frames.open()">
+      <span class="item" onclick="snapshots.open()">
         <i class="fas fa-eye"></i>
       </span>
     </div>

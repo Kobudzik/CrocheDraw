@@ -25,7 +25,7 @@ export class Canvas {
     this.data = [...Array(this.width)].map(() => Array(this.height).fill([255, 255, 255, 255]));
     this.steps = [];
     this.redo_arr = [];
-    this.frames = [];
+    this.snapshots = [];
     this.setupEventListeners();
     this.lc = [];
   }
@@ -246,23 +246,23 @@ export class Canvas {
   }
 
   /**
-   * Adds the current frame to the list of frames, storing its data.
+   * Adds the current frame to the list of snapshots, storing its data.
    *
    * @param {string} [data=null] - Optional image data URL to store.
    */
   addFrame(data = null) {
     const img = new Image();
     img.src = data || this.canvas.toDataURL();
-    this.frames.push([img, this.data.map((inner) => inner.slice())]);
+    this.snapshots.push([img, this.data.map((inner) => inner.slice())]);
   }
 
   /**
-   * Deletes a frame from the list of frames.
+   * Deletes a frame from the list of snapshots.
    *
    * @param {number} f - The index of the frame to delete.
    */
   deleteFrame(f) {
-    this.frames.splice(f, 1);
+    this.snapshots.splice(f, 1);
   }
 
   /**
@@ -272,7 +272,7 @@ export class Canvas {
    */
   loadFrame(f) {
     this.clear();
-    const img = this.frames[f][1];
+    const img = this.snapshots[f][1];
     const tmp_color = this.color;
     const tmp_alpha = this.ctx.globalAlpha;
     this.ctx.globalAlpha = 1;
@@ -289,10 +289,10 @@ export class Canvas {
   }
 
   /**
-   * Renders a GIF from the frames stored in the canvas.
+   * Renders a GIF from the snapshots stored in the canvas.
    */
   renderGIF() {
-    this.frames.forEach((frame) => {
+    this.snapshots.forEach((frame) => {
       gif.addFrame(frame[0], {
         copy: true,
         delay: 100,
