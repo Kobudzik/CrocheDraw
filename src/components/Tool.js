@@ -11,4 +11,7 @@ export const Tool = {
   clearCanvas: 9,
 };
 
+/**
+ * Array representing the current active state of each tool.
+ */
 export let tools = [true, false, false, false, false, false];

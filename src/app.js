@@ -1,14 +1,14 @@
 import { Canvas } from "./components/Canvas.js";
 import { Popup } from "./components/Popup.js";
-import { act } from "./helpers/utils.js";
 
 window.onload = function () {
   let canvasData = localStorage.getItem("pc-canvas-data");
-
   if (canvasData) {
     const data = JSON.parse(canvasData);
+
     window.colors = data.colors;
     window.board = new Canvas(data.width, data.height);
+
     const img = new Image();
     img.setAttribute("src", data.url);
     img.addEventListener("load", function () {
@@ -18,6 +18,7 @@ window.onload = function () {
     window.board.steps = data.steps;
     window.board.redo_arr = data.redo_arr;
     window.board.setcolor(data.currColor);
+
     window.gif = new GIF({
       workers: 2,
       quality: 10,
@@ -41,8 +42,8 @@ window.onload = function () {
       (x) => `
       <span
         class="item" style="background-color: rgb(${x[0]},${x[1]},${x[2]})" 
-        onclick="board.setcolor([${x}]);act(this);"
-        oncontextmenu="board.setcolor([${x}]);act(this);board.ctx.globalAlpha=+prompt('Transparency(0-1)?')"
+        onclick="board.setcolor([${x}]);setActiveColor(this);"
+        oncontextmenu="board.setcolor([${x}]);setActiveColor(this);board.ctx.globalAlpha=+prompt('Transparency(0-1)?')"
       >
       </span>`
     )
@@ -107,14 +108,19 @@ export function newProject() {
   ];
 }
 
-function install() {
-  msg.prompt();
-}
-
 window.onbeforeunload = function () {
   board.saveInLocal();
   return "Data will be lost if you leave the page, are you sure?";
 };
+
+window.onerror = function (errorMsg, url, lineNumber) {
+  alert("Error: " + errorMsg + " Script: " + url + " Line: " + lineNumber);
+};
+
+//#region serviceWorker
+function install() {
+  msg.prompt();
+}
 
 const scope = {
   scope: "./",
@@ -138,7 +144,4 @@ window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   msg = e;
 });
-
-window.onerror = function (errorMsg, url, lineNumber) {
-  alert("Error: " + errorMsg + " Script: " + url + " Line: " + lineNumber);
-};
+//#endregion

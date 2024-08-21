@@ -1,6 +1,12 @@
 import { Tool, tools } from "./Tool.js";
 import { filler } from "../helpers/filler.js";
 
+/**
+ * The Canvas class represents the drawing canvas within the application.
+ *
+ * This class manages the canvas setup, event listeners, drawing operations,
+ * and other related functionalities like frame management, undo/redo, and image handling.
+ */
 export class Canvas {
   constructor(width, height) {
     this.canvas = document.querySelector("#canvas");
@@ -24,6 +30,10 @@ export class Canvas {
     this.lc = [];
   }
 
+  /**
+   * Sets up event listeners for canvas interaction, including click, mouse move,
+   * touch move, and mouse button events.
+   */
   setupEventListeners() {
     this.canvas.addEventListener("click", (e) => this.handleClick(e));
     this.canvas.addEventListener("mousemove", (e) => this.handleMouseMove(e));
@@ -32,6 +42,10 @@ export class Canvas {
     this.canvas.addEventListener("mouseup", () => (this.active = false));
   }
 
+  /**
+   * Handles click events on the canvas, determining the tool in use and
+   * executing the appropriate action (e.g., filling, erasing, drawing shapes).
+   */
   handleClick(e) {
     const rect = this.canvas.getBoundingClientRect();
     let x = e.clientX - rect.left;
@@ -42,35 +56,22 @@ export class Canvas {
     if (tools[Tool.fillBucket]) {
       filler(x, y, this.data[x][y]);
     } else if (tools[Tool.eraser]) {
-      const temp = this.color;
-      const tga = this.ctx.globalAlpha;
-      this.setcolor([255, 255, 255, 255]);
-      this.draw(x, y);
-      this.setcolor(temp);
-      this.ctx.globalAlpha = tga;
+      this.erase(x, y);
     } else if (tools[Tool.line]) {
-      this.lc.push(new Point(x, y));
-      if (this.lc.length === 2) {
-        const lp = line(this.lc[0], this.lc[1]);
-        this.lc = [];
-        lp.forEach((p) => this.draw(p.x, p.y));
-      }
+      this.drawLine(x, y);
     } else if (tools[Tool.circle]) {
-      const centre = new Point(x, y);
-      const radius = +prompt("radius?");
-      const lp = circle(radius, centre);
-      lp.forEach((p) => this.draw(p.x, p.y));
+      this.drawCircle(x, y);
     } else if (tools[Tool.ellipse]) {
-      const center = new Point(x, y);
-      const radiusX = +prompt("X radius?");
-      const radiusY = +prompt("Y radius?");
-      const lp = ellipse(radiusX, radiusY, center);
-      lp.forEach((p) => this.draw(p.x, p.y));
+      this.drawEllipse(x, y);
     } else {
       this.draw(x, y);
     }
   }
 
+  /**
+   * Handles mouse movement events, enabling drawing or erasing based on the active tool
+   * when the mouse button is pressed.
+   */
   handleMouseMove(e) {
     if (this.active) {
       const rect = this.canvas.getBoundingClientRect();
@@ -87,6 +88,10 @@ export class Canvas {
     }
   }
 
+  /**
+   * Handles touch movement events on touch-enabled devices, enabling drawing or erasing
+   * based on the active tool.
+   */
   handleTouchMove(e) {
     const rect = this.canvas.getBoundingClientRect();
     let x = e.touches[0].clientX - rect.left;
@@ -101,16 +106,88 @@ export class Canvas {
     }
   }
 
-  draw(x, y, count) {
-    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
-      this.data[x][y] = this.color;
-      this.ctx.fillRect(Math.floor(x * (this.w / this.width)), Math.floor(y * (this.h / this.height)), Math.floor(this.w / this.width), Math.floor(this.h / this.height));
-      if (!count && JSON.stringify(this.steps[this.steps.length - 1]) !== JSON.stringify([x, y, this.color, this.ctx.globalAlpha])) {
-        this.steps.push([x, y, this.color, this.ctx.globalAlpha]);
+  /**
+   * Draws on the canvas at the specified (x, y) coordinates.
+   * Tracks the steps taken for undo/redo functionality if applicable.
+   *
+   * @param {number} x - The x-coordinate on the canvas.
+   * @param {number} y - The y-coordinate on the canvas.
+   * @param {boolean} [count=false] - Flag indicating whether to track the step or not.
+   */
+  draw(x, y, count = false) {
+    if (this.isInBounds(x, y)) {
+      this.updateCanvasData(x, y);
+      this.renderPixel(x, y);
+
+      if (!count) {
+        this.trackSteps(x, y);
       }
     }
   }
 
+  /**
+   * Helper method to check if the coordinates are within canvas bounds.
+   *
+   * @param {number} x - The x-coordinate to check.
+   * @param {number} y - The y-coordinate to check.
+   * @returns {boolean} - Returns true if the coordinates are within bounds, false otherwise.
+   */
+  isInBounds(x, y) {
+    return x >= 0 && x < this.width && y >= 0 && y < this.height;
+  }
+
+  /**
+   * Updates the canvas data at the specified coordinates with the current color.
+   *
+   * @param {number} x - The x-coordinate on the canvas.
+   * @param {number} y - The y-coordinate on the canvas.
+   */
+  updateCanvasData(x, y) {
+    this.data[x][y] = this.color;
+  }
+
+  /**
+   * Renders a pixel on the canvas at the specified coordinates.
+   *
+   * @param {number} x - The x-coordinate on the canvas.
+   * @param {number} y - The y-coordinate on the canvas.
+   */
+  renderPixel(x, y) {
+    const pixelWidth = Math.floor(this.w / this.width);
+    const pixelHeight = Math.floor(this.h / this.height);
+    this.ctx.fillRect(Math.floor(x * pixelWidth), Math.floor(y * pixelHeight), pixelWidth, pixelHeight);
+  }
+
+  /**
+   * Tracks the drawing steps taken, storing them for undo/redo functionality.
+   *
+   * @param {number} x - The x-coordinate on the canvas.
+   * @param {number} y - The y-coordinate on the canvas.
+   */
+  trackSteps(x, y) {
+    const currentStep = [x, y, this.color, this.ctx.globalAlpha];
+    if (this.steps.length === 0 || !this.isLastStepEqual(currentStep)) {
+      this.steps.push(currentStep);
+    }
+  }
+
+  /**
+   * Compares the current step with the last step in the stack.
+   *
+   * @param {Array} step - The current step to compare.
+   * @returns {boolean} - Returns true if the current step is equal to the last step, false otherwise.
+   */
+  isLastStepEqual(step) {
+    const lastStep = this.steps[this.steps.length - 1];
+    return JSON.stringify(lastStep) === JSON.stringify(step);
+  }
+
+  /**
+   * Erases a pixel on the canvas by setting it to white.
+   *
+   * @param {number} x - The x-coordinate on the canvas.
+   * @param {number} y - The y-coordinate on the canvas.
+   */
   erase(x, y) {
     const temp = this.color;
     const tga = this.ctx.globalAlpha;
@@ -120,12 +197,22 @@ export class Canvas {
     this.ctx.globalAlpha = tga;
   }
 
+  /**
+   * Sets the current drawing color.
+   *
+   * @param {Array} color - The RGBA color array to set as the current color.
+   */
   setcolor(color) {
     this.ctx.globalAlpha = 1;
     this.color = color;
     this.ctx.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${color[3]})`;
   }
 
+  /**
+   * Sets the current tool mode and updates the toolbar UI.
+   *
+   * @param {number} i - The tool index to activate.
+   */
   setmode(i) {
     tools.fill(false);
     tools[i] = true;
@@ -134,6 +221,9 @@ export class Canvas {
     });
   }
 
+  /**
+   * Saves the current canvas as an image file.
+   */
   save() {
     this.canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob);
@@ -144,6 +234,9 @@ export class Canvas {
     });
   }
 
+  /**
+   * Clears the canvas, resetting it to a white background.
+   */
   clear() {
     this.ctx.fillStyle = "white";
     this.ctx.fillRect(0, 0, this.w, this.h);
@@ -152,16 +245,31 @@ export class Canvas {
     this.setmode(Tool.pen);
   }
 
+  /**
+   * Adds the current frame to the list of frames, storing its data.
+   *
+   * @param {string} [data=null] - Optional image data URL to store.
+   */
   addFrame(data = null) {
     const img = new Image();
     img.src = data || this.canvas.toDataURL();
     this.frames.push([img, this.data.map((inner) => inner.slice())]);
   }
 
+  /**
+   * Deletes a frame from the list of frames.
+   *
+   * @param {number} f - The index of the frame to delete.
+   */
   deleteFrame(f) {
     this.frames.splice(f, 1);
   }
 
+  /**
+   * Loads a specific frame and redraws it on the canvas.
+   *
+   * @param {number} f - The index of the frame to load.
+   */
   loadFrame(f) {
     this.clear();
     const img = this.frames[f][1];
@@ -180,6 +288,9 @@ export class Canvas {
     this.ctx.globalAlpha = tmp_alpha;
   }
 
+  /**
+   * Renders a GIF from the frames stored in the canvas.
+   */
   renderGIF() {
     this.frames.forEach((frame) => {
       gif.addFrame(frame[0], {
@@ -190,6 +301,9 @@ export class Canvas {
     gif.render();
   }
 
+  /**
+   * Undoes the last drawing action by restoring the previous state.
+   */
   undo() {
     this.clear();
     this.redo_arr.push(this.steps.pop());
@@ -200,6 +314,9 @@ export class Canvas {
     });
   }
 
+  /**
+   * Redoes the last undone drawing action.
+   */
   redo() {
     this.steps.push(this.redo_arr.pop());
     this.steps.forEach((step) => {
@@ -209,6 +326,9 @@ export class Canvas {
     });
   }
 
+  /**
+   * Saves the current canvas state in local storage for later retrieval.
+   */
   saveInLocal() {
     const d = {
       colors: window.colors,
@@ -223,6 +343,10 @@ export class Canvas {
     localStorage.setItem("pc-canvas-data", JSON.stringify(d));
   }
 
+  /**
+   * Adds an image from the user's file system to the canvas, processing it
+   * to fit within the canvas dimensions.
+   */
   addImage() {
     const _this = this;
     const fp = document.createElement("input");
@@ -259,5 +383,47 @@ export class Canvas {
         };
       };
     };
+  }
+
+  /**
+   * Draws a line between two points on the canvas.
+   *
+   * @param {number} x - The x-coordinate of the starting point.
+   * @param {number} y - The y-coordinate of the starting point.
+   */
+  drawLine(x, y) {
+    this.lc.push(new Point(x, y));
+    if (this.lc.length === 2) {
+      const lp = line(this.lc[0], this.lc[1]);
+      this.lc = [];
+      lp.forEach((p) => this.draw(p.x, p.y));
+    }
+  }
+
+  /**
+   * Draws a circle on the canvas at the specified coordinates with a specified radius.
+   *
+   * @param {number} x - The x-coordinate of the circle's center.
+   * @param {number} y - The y-coordinate of the circle's center.
+   */
+  drawCircle(x, y) {
+    const centre = new Point(x, y);
+    const radius = +prompt("radius?");
+    const lp = circle(radius, centre);
+    lp.forEach((p) => this.draw(p.x, p.y));
+  }
+
+  /**
+   * Draws an ellipse on the canvas at the specified coordinates with specified radii.
+   *
+   * @param {number} x - The x-coordinate of the ellipse's center.
+   * @param {number} y - The y-coordinate of the ellipse's center.
+   */
+  drawEllipse(x, y) {
+    const center = new Point(x, y);
+    const radiusX = +prompt("X radius?");
+    const radiusY = +prompt("Y radius?");
+    const lp = ellipse(radiusX, radiusY, center);
+    lp.forEach((p) => this.draw(p.x, p.y));
   }
 }
