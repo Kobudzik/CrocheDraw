@@ -1,5 +1,5 @@
 import { Canvas } from "./components/Canvas.js";
-import { newProject } from "./helpers/utils.js";
+import { newProject, initWindowGIF } from "./helpers/utils.js";
 
 window.onload = function () {
   let canvasData = localStorage.getItem("pc-canvas-data");
@@ -19,6 +19,9 @@ function loadProject(canvasData) {
 
   window.colors = data.colors;
   window.board = new Canvas(data.width, data.height);
+  window.board.steps = data.steps;
+  window.board.redo_arr = data.redo_arr;
+  window.board.setcolor(data.currColor);
 
   const img = new Image();
   img.setAttribute("src", data.url);
@@ -26,24 +29,7 @@ function loadProject(canvasData) {
     window.board.ctx.drawImage(img, 0, 0);
   });
 
-  window.board.steps = data.steps;
-  window.board.redo_arr = data.redo_arr;
-  window.board.setcolor(data.currColor);
-
-  window.gif = new GIF({
-    workers: 2,
-    quality: 10,
-    width: 10 * window.board.width,
-    height: 10 * window.board.height,
-  });
-
-  window.gif.on("finished", function (blob) {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.download = "canvas.gif";
-    link.href = url;
-    link.click();
-  });
+  initWindowGIF();
 }
 
 function renderColors() {
@@ -64,22 +50,12 @@ document.querySelector("#close").onclick = function () {
   const width = +document.querySelector("#width").value;
   const height = +document.querySelector("#height").value;
   window.board = new Canvas(width, height);
-  window.board.setcolor([0, 0, 0, 255]);
-  window.dim.close();
-  window.gif = new GIF({
-    workers: 2,
-    quality: 10,
-    width: 10 * window.board.width,
-    height: 10 * window.board.height,
-  });
 
-  window.gif.on("finished", function (blob) {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.download = "canvas.gif";
-    link.href = url;
-    link.click();
-  });
+  window.board.setcolor([0, 0, 0, 255]);
+
+  window.dim.close();
+
+  initWindowGIF();
 };
 
 document.querySelector(".menubtn").onclick = function () {
@@ -94,7 +70,6 @@ window.onbeforeunload = function () {
 window.onerror = function (errorMsg, url, lineNumber) {
   alert("Error: " + errorMsg + " Script: " + url + " Line: " + lineNumber);
 };
-
 //#region serviceWorker
 function install() {
   msg.prompt();

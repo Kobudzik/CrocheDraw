@@ -10,10 +10,11 @@ export function setActiveColor(htmlElement) {
 
 export function newProject() {
   document.querySelector(".menu").style.display = "none";
+
   localStorage.removeItem("pc-canvas-data");
 
   window.dim = new NewProjectPopup("#newProjectPopup");
-
+  console.log(window.dim);
   window.colors = [
     [0, 0, 0, 255], // Black
     [127, 127, 127, 255], // Grey
@@ -36,4 +37,21 @@ export function newProject() {
     [112, 146, 190, 255], // Steel Blue
     [200, 191, 231, 255], // Lavender
   ];
+}
+
+export function initWindowGIF() {
+  window.gif = new GIF({
+    workers: 2,
+    quality: 10,
+    width: 10 * window.board.width,
+    height: 10 * window.board.height,
+  });
+
+  window.gif.on("finished", function (blob) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = "canvas.gif";
+    link.href = url;
+    link.click();
+  });
 }
