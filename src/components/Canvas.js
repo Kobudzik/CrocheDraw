@@ -1,5 +1,5 @@
 import { Tool, activeTools } from "./Tool.js";
-import { filler } from "../helpers/filler.js";
+import { bucketFill } from "../helpers/bucketFill.js";
 
 /**
  * The Canvas class represents the drawing canvas within the application.
@@ -54,7 +54,7 @@ export class Canvas {
     y = Math.floor((this.height * y) / this.canvas.clientHeight);
 
     if (activeTools[Tool.fillBucket]) {
-      filler(x, y, this.data[x][y]);
+      bucketFill(x, y, this.data[x][y]);
     } else if (activeTools[Tool.eraser]) {
       this.erase(x, y);
     } else if (activeTools[Tool.line]) {
