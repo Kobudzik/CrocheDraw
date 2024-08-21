@@ -1,5 +1,3 @@
-import { NewProjectPopup } from "../components/NewProjectPopup.js";
-
 /**
  * Highlights the selected color in the palette by applying a box shadow effect.
  */
@@ -13,7 +11,7 @@ export function newProject() {
 
   localStorage.removeItem("pc-canvas-data");
 
-  window.dim = new NewProjectPopup("#newProjectPopup");
+  document.querySelector("#newProjectPopup").style.display = "block";
   console.log(window.dim);
   window.colors = [
     [0, 0, 0, 255], // Black

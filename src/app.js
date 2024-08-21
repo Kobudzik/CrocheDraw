@@ -53,7 +53,7 @@ document.querySelector("#close").onclick = function () {
 
   window.board.setcolor([0, 0, 0, 255]);
 
-  window.dim.close();
+  document.querySelector("#newProjectPopup").style.display = "none";
 
   initWindowGIF();
 };
