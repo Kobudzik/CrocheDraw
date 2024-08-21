@@ -1,4 +1,4 @@
-import { AvailableTools, activeTools } from "./Tool.js";
+import { AvailableTools, activeTools } from "./Tools.js";
 import { bucketFill } from "../helpers/bucketFill.js";
 
 /**
@@ -54,11 +54,12 @@ export class Canvas {
    * executing the appropriate action (e.g., filling, erasing, drawing shapes).
    */
   handleClick(e) {
-    const rect = this.canvas.getBoundingClientRect();
-    let x = e.clientX - rect.left;
-    let y = e.clientY - rect.top;
-    x = Math.floor((this.width * x) / this.canvas.clientWidth);
-    y = Math.floor((this.height * y) / this.canvas.clientHeight);
+    const { clientX, clientY } = e;
+    const { left, top } = this.canvas.getBoundingClientRect();
+    const { clientWidth, clientHeight } = this.canvas;
+
+    const x = Math.floor((this.width * (clientX - left)) / clientWidth);
+    const y = Math.floor((this.height * (clientY - top)) / clientHeight);
 
     if (activeTools[AvailableTools.fillBucket]) {
       bucketFill(x, y, this.data[x][y]);
@@ -100,11 +101,12 @@ export class Canvas {
    * based on the active tool.
    */
   handleTouchMove(e) {
-    const rect = this.canvas.getBoundingClientRect();
-    let x = e.touches[0].clientX - rect.left;
-    let y = e.touches[0].clientY - rect.top;
-    x = Math.floor((this.width * x) / this.canvas.clientWidth);
-    y = Math.floor((this.height * y) / this.canvas.clientHeight);
+    const { clientX, clientY } = e.touches[0];
+    const { left, top } = this.canvas.getBoundingClientRect();
+    const { clientWidth, clientHeight } = this.canvas;
+
+    const x = Math.floor((this.width * (clientX - left)) / clientWidth);
+    const y = Math.floor((this.height * (clientY - top)) / clientHeight);
 
     if (activeTools[AvailableTools.pen]) {
       this.draw(x, y);
@@ -116,17 +118,13 @@ export class Canvas {
   /**
    * Draws on the canvas at the specified (x, y) coordinates.
    * Tracks the steps taken for undo/redo functionality if applicable.
-   *
-   * @param {number} x - The x-coordinate on the canvas.
-   * @param {number} y - The y-coordinate on the canvas.
-   * @param {boolean} [count=false] - Flag indicating whether to track the step or not.
    */
-  draw(x, y, count = false) {
+  draw(x, y, skipTrack = false) {
     if (this.isInBounds(x, y)) {
       this.updateCanvasData(x, y);
       this.renderPixel(x, y);
 
-      if (!count) {
+      if (!skipTrack) {
         this.trackSteps(x, y);
       }
     }
@@ -134,10 +132,6 @@ export class Canvas {
 
   /**
    * Helper method to check if the coordinates are within canvas bounds.
-   *
-   * @param {number} x - The x-coordinate to check.
-   * @param {number} y - The y-coordinate to check.
-   * @returns {boolean} - Returns true if the coordinates are within bounds, false otherwise.
    */
   isInBounds(x, y) {
     return x >= 0 && x < this.width && y >= 0 && y < this.height;
@@ -154,9 +148,16 @@ export class Canvas {
    * Renders a pixel on the canvas at the specified coordinates.
    */
   renderPixel(x, y) {
-    const pixelWidth = Math.floor(this.pixelWidth / this.width);
-    const pixelHeight = Math.floor(this.pixelHeight / this.height);
-    this.ctx.fillRect(Math.floor(x * pixelWidth), Math.floor(y * pixelHeight), pixelWidth, pixelHeight);
+    console.log("pixelHeight", this.pixelHeight);
+    console.log("height", this.height);
+    console.log("canvas.height", this.canvas.height);
+    const renderPixelWidth = Math.floor(this.pixelWidth / this.width);
+    const renderPixelHeight = Math.floor(this.pixelHeight / this.height);
+
+    const renderX = Math.floor(x * renderPixelWidth);
+    const renderY = Math.floor(y * renderPixelHeight);
+
+    this.ctx.fillRect(renderX, renderY, renderPixelWidth, renderPixelHeight);
   }
 
   /**
