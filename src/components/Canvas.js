@@ -1,4 +1,4 @@
-import { Tool, tools } from "./Tool.js";
+import { Tool, activeTools } from "./Tool.js";
 import { filler } from "../helpers/filler.js";
 
 /**
@@ -53,15 +53,15 @@ export class Canvas {
     x = Math.floor((this.width * x) / this.canvas.clientWidth);
     y = Math.floor((this.height * y) / this.canvas.clientHeight);
 
-    if (tools[Tool.fillBucket]) {
+    if (activeTools[Tool.fillBucket]) {
       filler(x, y, this.data[x][y]);
-    } else if (tools[Tool.eraser]) {
+    } else if (activeTools[Tool.eraser]) {
       this.erase(x, y);
-    } else if (tools[Tool.line]) {
+    } else if (activeTools[Tool.line]) {
       this.drawLine(x, y);
-    } else if (tools[Tool.circle]) {
+    } else if (activeTools[Tool.circle]) {
       this.drawCircle(x, y);
-    } else if (tools[Tool.ellipse]) {
+    } else if (activeTools[Tool.ellipse]) {
       this.drawEllipse(x, y);
     } else {
       this.draw(x, y);
@@ -80,9 +80,9 @@ export class Canvas {
       x = Math.floor((this.width * x) / this.canvas.clientWidth);
       y = Math.floor((this.height * y) / this.canvas.clientHeight);
 
-      if (tools[Tool.pen]) {
+      if (activeTools[Tool.pen]) {
         this.draw(x, y);
-      } else if (tools[Tool.eraser]) {
+      } else if (activeTools[Tool.eraser]) {
         this.erase(x, y);
       }
     }
@@ -99,9 +99,9 @@ export class Canvas {
     x = Math.floor((this.width * x) / this.canvas.clientWidth);
     y = Math.floor((this.height * y) / this.canvas.clientHeight);
 
-    if (tools[Tool.pen]) {
+    if (activeTools[Tool.pen]) {
       this.draw(x, y);
-    } else if (tools[Tool.eraser]) {
+    } else if (activeTools[Tool.eraser]) {
       this.erase(x, y);
     }
   }
@@ -214,10 +214,10 @@ export class Canvas {
    * @param {number} i - The tool index to activate.
    */
   setmode(i) {
-    tools.fill(false);
-    tools[i] = true;
+    activeTools.fill(false);
+    activeTools[i] = true;
     document.querySelectorAll("#toolbar .item").forEach((x, i) => {
-      x.style.backgroundColor = tools[i] ? "grey" : "";
+      x.style.backgroundColor = activeTools[i] ? "grey" : "";
     });
   }
 

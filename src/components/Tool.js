@@ -14,4 +14,4 @@ export const Tool = {
 /**
  * Array representing the current active state of each tool.
  */
-export let tools = [true, false, false, false, false, false];
+export let activeTools = [true, false, false, false, false, false];
