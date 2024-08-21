@@ -28,7 +28,7 @@ export class Snapshots {
     document.querySelectorAll("#snapshots #gallery img").forEach((thumbnail, index) => {
       // On left-click, load the selected frame and close the gallery
       thumbnail.onclick = () => {
-        board.loadFrame(index);
+        board.loadSnapshot(index);
         snapshots.close();
       };
 
@@ -37,7 +37,7 @@ export class Snapshots {
         event.preventDefault();
         const deleteConfirmation = confirm("Delete?");
         if (deleteConfirmation) {
-          board.deleteFrame(index);
+          board.deleteSnapshot(index);
           snapshots.open(); // Refresh the gallery after deletion
         }
       };

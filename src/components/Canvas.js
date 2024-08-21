@@ -138,9 +138,6 @@ export class Canvas {
 
   /**
    * Updates the canvas data at the specified coordinates with the current color.
-   *
-   * @param {number} x - The x-coordinate on the canvas.
-   * @param {number} y - The y-coordinate on the canvas.
    */
   updateCanvasData(x, y) {
     this.data[x][y] = this.color;
@@ -148,9 +145,6 @@ export class Canvas {
 
   /**
    * Renders a pixel on the canvas at the specified coordinates.
-   *
-   * @param {number} x - The x-coordinate on the canvas.
-   * @param {number} y - The y-coordinate on the canvas.
    */
   renderPixel(x, y) {
     const pixelWidth = Math.floor(this.w / this.width);
@@ -160,9 +154,6 @@ export class Canvas {
 
   /**
    * Tracks the drawing steps taken, storing them for undo/redo functionality.
-   *
-   * @param {number} x - The x-coordinate on the canvas.
-   * @param {number} y - The y-coordinate on the canvas.
    */
   trackSteps(x, y) {
     const currentStep = [x, y, this.color, this.ctx.globalAlpha];
@@ -183,10 +174,40 @@ export class Canvas {
   }
 
   /**
+   * Draws a line between two points on the canvas.
+   */
+  drawLine(x, y) {
+    this.lc.push(new Point(x, y));
+    if (this.lc.length === 2) {
+      const lp = line(this.lc[0], this.lc[1]);
+      this.lc = [];
+      lp.forEach((p) => this.draw(p.x, p.y));
+    }
+  }
+
+  /**
+   * Draws a circle on the canvas at the specified coordinates with a specified radius.
+   */
+  drawCircle(x, y) {
+    const centre = new Point(x, y);
+    const radius = +prompt("radius?");
+    const lp = circle(radius, centre);
+    lp.forEach((p) => this.draw(p.x, p.y));
+  }
+
+  /**
+   * Draws an ellipse on the canvas at the specified coordinates with specified radii.
+   */
+  drawEllipse(x, y) {
+    const center = new Point(x, y);
+    const radiusX = +prompt("X radius?");
+    const radiusY = +prompt("Y radius?");
+    const lp = ellipse(radiusX, radiusY, center);
+    lp.forEach((p) => this.draw(p.x, p.y));
+  }
+
+  /**
    * Erases a pixel on the canvas by setting it to white.
-   *
-   * @param {number} x - The x-coordinate on the canvas.
-   * @param {number} y - The y-coordinate on the canvas.
    */
   erase(x, y) {
     const temp = this.color;
@@ -216,15 +237,17 @@ export class Canvas {
   setmode(i) {
     activeTools.fill(false);
     activeTools[i] = true;
+
+    //diselect all colors from palette
     document.querySelectorAll("#toolbar .item").forEach((x, i) => {
       x.style.backgroundColor = activeTools[i] ? "grey" : "";
     });
   }
 
   /**
-   * Saves the current canvas as an image file.
+   * Exports the current canvas as an image file.
    */
-  save() {
+  exportAsImage() {
     this.canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -237,7 +260,7 @@ export class Canvas {
   /**
    * Clears the canvas, resetting it to a white background.
    */
-  clear() {
+  clearCanvas() {
     this.ctx.fillStyle = "white";
     this.ctx.fillRect(0, 0, this.w, this.h);
     this.data = [...Array(this.width)].map(() => Array(this.height).fill([255, 255, 255, 255]));
@@ -250,7 +273,7 @@ export class Canvas {
    *
    * @param {string} [data=null] - Optional image data URL to store.
    */
-  addFrame(data = null) {
+  addSnapshot(data = null) {
     const img = new Image();
     img.src = data || this.canvas.toDataURL();
     this.snapshots.push([img, this.data.map((inner) => inner.slice())]);
@@ -261,7 +284,7 @@ export class Canvas {
    *
    * @param {number} f - The index of the frame to delete.
    */
-  deleteFrame(f) {
+  deleteSnapshot(f) {
     this.snapshots.splice(f, 1);
   }
 
@@ -270,8 +293,8 @@ export class Canvas {
    *
    * @param {number} f - The index of the frame to load.
    */
-  loadFrame(f) {
-    this.clear();
+  loadSnapshot(f) {
+    this.clearCanvas();
     const img = this.snapshots[f][1];
     const tmp_color = this.color;
     const tmp_alpha = this.ctx.globalAlpha;
@@ -293,7 +316,7 @@ export class Canvas {
    */
   renderGIF() {
     this.snapshots.forEach((frame) => {
-      gif.addFrame(frame[0], {
+      gif.addSnapshot(frame[0], {
         copy: true,
         delay: 100,
       });
@@ -305,7 +328,7 @@ export class Canvas {
    * Undoes the last drawing action by restoring the previous state.
    */
   undo() {
-    this.clear();
+    this.clearCanvas();
     this.redo_arr.push(this.steps.pop());
     this.steps.forEach((step) => {
       this.setcolor(step[2]);
@@ -348,82 +371,63 @@ export class Canvas {
    * to fit within the canvas dimensions.
    */
   addImage() {
-    const _this = this;
-    const fp = document.createElement("input");
-    fp.type = "file";
-    fp.click();
-    fp.onchange = function (e) {
-      const reader = new FileReader();
-      reader.readAsDataURL(e.target.files[0]);
-      reader.onload = function () {
-        const uimg = new Image();
-        uimg.src = reader.result;
-        uimg.width = _this.w;
-        uimg.height = _this.h;
-        uimg.onload = function () {
-          const pxc = document.createElement("canvas");
-          pxc.width = _this.w;
-          pxc.height = _this.h;
-          const pxctx = pxc.getContext("2d");
-          pxctx.drawImage(uimg, 0, 0, _this.w, _this.h);
-          for (let i = 0; i < _this.width; i++) {
-            for (let j = 0; j < _this.height; j++) {
-              let ctr = 0;
-              let avg = [0, 0, 0, 0];
-              const pix = pxctx.getImageData(10 * i, 10 * j, 10, 10).data;
-              pix.forEach((x, k) => {
-                avg[k % 4] += x;
-                if (k % 4 === 0) ctr++;
-              });
-              avg = avg.map((x) => Math.floor(x / ctr));
-              _this.setcolor(avg);
-              _this.draw(i, j);
-            }
-          }
+    const inputFile = document.createElement("input");
+    inputFile.type = "file";
+    inputFile.accept = "image/*";
+
+    inputFile.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+          this.processImage(fileReader.result);
         };
-      };
+      }
+    });
+
+    inputFile.click();
+  }
+
+  processImage(imageDataURL) {
+    const image = new Image();
+    image.src = imageDataURL;
+
+    image.onload = () => {
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = this.w;
+      tempCanvas.height = this.h;
+      const tempCtx = tempCanvas.getContext("2d");
+      tempCtx.drawImage(image, 0, 0, this.w, this.h);
+
+      this.updateCanvasWithImage(tempCtx);
     };
   }
 
-  /**
-   * Draws a line between two points on the canvas.
-   *
-   * @param {number} x - The x-coordinate of the starting point.
-   * @param {number} y - The y-coordinate of the starting point.
-   */
-  drawLine(x, y) {
-    this.lc.push(new Point(x, y));
-    if (this.lc.length === 2) {
-      const lp = line(this.lc[0], this.lc[1]);
-      this.lc = [];
-      lp.forEach((p) => this.draw(p.x, p.y));
+  updateCanvasWithImage(ctx) {
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        const pixelData = ctx.getImageData(10 * i, 10 * j, 10, 10).data;
+        const avgColor = this.calculateAverageColor(pixelData);
+
+        this.setcolor(avgColor);
+        this.draw(i, j);
+      }
     }
   }
 
-  /**
-   * Draws a circle on the canvas at the specified coordinates with a specified radius.
-   *
-   * @param {number} x - The x-coordinate of the circle's center.
-   * @param {number} y - The y-coordinate of the circle's center.
-   */
-  drawCircle(x, y) {
-    const centre = new Point(x, y);
-    const radius = +prompt("radius?");
-    const lp = circle(radius, centre);
-    lp.forEach((p) => this.draw(p.x, p.y));
-  }
+  calculateAverageColor(pixelData) {
+    let count = 0;
+    const avgColor = [0, 0, 0, 0];
 
-  /**
-   * Draws an ellipse on the canvas at the specified coordinates with specified radii.
-   *
-   * @param {number} x - The x-coordinate of the ellipse's center.
-   * @param {number} y - The y-coordinate of the ellipse's center.
-   */
-  drawEllipse(x, y) {
-    const center = new Point(x, y);
-    const radiusX = +prompt("X radius?");
-    const radiusY = +prompt("Y radius?");
-    const lp = ellipse(radiusX, radiusY, center);
-    lp.forEach((p) => this.draw(p.x, p.y));
+    for (let i = 0; i < pixelData.length; i += 4) {
+      for (let j = 0; j < 4; j++) {
+        avgColor[j] += pixelData[i + j];
+      }
+      count++;
+    }
+
+    return avgColor.map((value) => Math.floor(value / count));
   }
 }

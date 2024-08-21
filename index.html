@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="style.css" />
 
     <script type="module">
-      import { newProject } from "./src/app.js";
+      import { newProject } from "./src/helpers/utils.js";
       import { setActiveColor } from "./src/helpers/utils.js";
       import { Snapshots } from "./src/components/Snapshots.js";
 
@@ -47,7 +47,7 @@
     <div class="menubtn">☰</div>
     <ul class="menu">
       <li onclick="newProject()">New</li>
-      <li onclick="board.save()">Save image</li>
+      <li onclick="board.exportAsImage()">Export image</li>
       <li onclick="install()">Install PWA</li>
       <li>
         <a href="https://github.com/rainboestrykr/pixellate" target="_blank">
@@ -92,7 +92,7 @@
       <span class="item" onclick="board.setmode(5)">
         <i class="far fa-circle" style="transform: rotateX(45deg)"></i>
       </span>
-      <span class="item" onclick="board.addFrame()">
+      <span class="item" onclick="board.addSnapshot()">
         <i class="fas fa-plus"></i>
       </span>
       <span class="item" onclick="board.undo()">
@@ -101,7 +101,7 @@
       <span class="item" onclick="board.redo()">
         <i class="fas fa-redo"></i>
       </span>
-      <span class="item" onclick="board.clear()">
+      <span class="item" onclick="board.clearCanvas()">
         <i class="fas fa-trash"></i>
       </span>
       <span class="item" onclick="board.addImage()">
