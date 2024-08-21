@@ -1,17 +1,22 @@
 # Pixellate
+
 A pixel art Creation Tool Built using HTML5 Canvas.  
 It is a Progressive Web App (PWA) with offline compatibility.  
-It is mobile-friendly and is very easy to use.  
+It is mobile-friendly and is very easy to use.
 
 ![Pixellate](icons/logo.png)
 
 ## Overview
+
 This App is available at https://pixellate.netlify.app
 
 ## Usage
-You can choose Any Dimensions for your Canvas, *16 X 16* is the default dimension.  
-Dimensions below *128 X 128* are preferable for smooth operation.
+
+You can choose Any Dimensions for your Canvas, _16 X 16_ is the default dimension.  
+Dimensions below _128 X 128_ are preferable for smooth operation.
+
 ## Toolbar
+
 ### Pencil
 
 The Pencil tool is the most basic tool and is used to draw pixels Freehand
@@ -20,7 +25,7 @@ The Pencil tool is the most basic tool and is used to draw pixels Freehand
 
 ### Eraser
 
-The Eraser tool is used to erase a given pixel 1 pixel at a time. It has dimensions *1 X 1* and is fixed.
+The Eraser tool is used to erase a given pixel 1 pixel at a time. It has dimensions _1 X 1_ and is fixed.
 
 ![Eraser Tool](https://user-images.githubusercontent.com/17960677/96023372-f5077f00-0e6f-11eb-965f-815b37f0d7b2.png)
 
@@ -34,9 +39,9 @@ The Paint tool is used to Flood Fill a given color with a new color. It works sm
 
 ### Line Tool
 
-The line tool is used to draw a line segment between 2 points using the Bresenham line drawing algorithm.  
+The line tool is used to draw a line segment between 2 points using the Bresenham line drawing algorithm.
 
-Click on the tool and click on 2 points to draw a line segment between them. 
+Click on the tool and click on 2 points to draw a line segment between them.
 
 ![Line Tool](https://user-images.githubusercontent.com/17960677/96023893-b625f900-0e70-11eb-9b16-ac0d68f9423c.png)
 
@@ -52,7 +57,6 @@ The Ellipse Tool is used to draw an ellipse with a given center and its radius a
 
 ![Ellipse Tool](https://user-images.githubusercontent.com/17960677/96024638-a0fd9a00-0e71-11eb-9171-16944bf95b40.png)
 
-
 ## Utility Tools
 
 ### Undo/Redo
@@ -67,8 +71,7 @@ This Tool is used to clear the current Canvas window.
 Before:  
 ![Clear Window](https://user-images.githubusercontent.com/17960677/96026664-73662000-0e74-11eb-8111-c46f54375056.png)  
 After:  
-![Claer Window](https://user-images.githubusercontent.com/17960677/96026681-7a8d2e00-0e74-11eb-9984-c267fb0290c9.png)  
-
+![Claer Window](https://user-images.githubusercontent.com/17960677/96026681-7a8d2e00-0e74-11eb-9984-c267fb0290c9.png)
 
 ## Advanced Tools
 
@@ -81,12 +84,11 @@ This Tool is Used to import an image and convert it to Pixel Art of Given Dimens
 
 ## Saving Pixel Art and GIF Animation
 
-Once you are done with making your pixel art or animation frames you can export it as a PNG or GIF to share it on other platforms. 
+Once you are done with making your pixel art or animation frames you can export it as a PNG or GIF to share it on other platforms.
 
-### Saving Image
+### Exporting Image
 
-Save Image option is available in the drop-down on the top left corner, It will download a file named *canvas.png* with dimensions *10 x width X 10 x Height*
-
+Export Image option is available in the drop-down on the top left corner, It will download a file named _canvas.png_ with dimensions _10 x width X 10 x Height_
 
 ## Color Palette & Transparency
 
@@ -94,7 +96,7 @@ The Following colors are available on the Color Palette.
 
 ![Color Palette](https://user-images.githubusercontent.com/17960677/96028508-fdaf8380-0e76-11eb-8502-18d49d96d059.png)
 
-You can select any color by clicking on it.  
+You can select any color by clicking on it.
 
 You can also set color Transparency to create translucent colors and create color combinations. This property can be used to create complex patterns with greater flexibility.
 
@@ -102,8 +104,8 @@ You can also set color Transparency to create translucent colors and create colo
 
 ## PWA Support
 
-This Web App is a Fully Compatible PWA and is installable.  
+This Web App is a Fully Compatible PWA and is installable.
 
 ![PWA Support](https://user-images.githubusercontent.com/17960677/96029402-3ef46300-0e78-11eb-8a54-d54b6dff458a.png)
 
-You can install it either from the Dropdown or using the "Add to Home Screen" Button From Options.  
+You can install it either from the Dropdown or using the "Add to Home Screen" Button From Options.
