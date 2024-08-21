@@ -10,6 +10,7 @@ import { bucketFill } from "../helpers/bucketFill.js";
 export class Canvas {
   constructor(width, height) {
     this.canvas = document.querySelector("#canvas");
+
     this.canvas.style.display = "block";
     this.canvas.style.height = Math.floor((height / width) * this.canvas.clientWidth) + "px";
 
@@ -79,17 +80,9 @@ export class Canvas {
    */
   handleMouseMove(e) {
     if (this.active) {
-      const rect = this.canvas.getBoundingClientRect();
-      let x = e.clientX - rect.left;
-      let y = e.clientY - rect.top;
-      x = Math.floor((this.width * x) / this.canvas.clientWidth);
-      y = Math.floor((this.height * y) / this.canvas.clientHeight);
-
-      if (activeTools[AvailableTools.pen]) {
-        this.draw(x, y);
-      } else if (activeTools[AvailableTools.eraser]) {
-        this.erase(x, y);
-      }
+      const { clientX, clientY } = e;
+      const { x, y } = this.calculateCanvasCoordinates(clientX, clientY);
+      this.handleToolAction(x, y);
     }
   }
 
@@ -99,17 +92,38 @@ export class Canvas {
    */
   handleTouchMove(e) {
     const { clientX, clientY } = e.touches[0];
-    const { left, top } = this.canvas.getBoundingClientRect();
-    const { clientWidth, clientHeight } = this.canvas;
+    const { x, y } = this.calculateCanvasCoordinates(clientX, clientY);
+    this.handleToolAction(x, y);
+  }
 
-    const x = Math.floor((this.width * (clientX - left)) / clientWidth);
-    const y = Math.floor((this.height * (clientY - top)) / clientHeight);
-
+  /**
+   * Handles the action based on the currently active tool.
+   *
+   * @param {number} x - The x-coordinate on the canvas.
+   * @param {number} y - The y-coordinate on the canvas.
+   */
+  handleToolAction(x, y) {
     if (activeTools[AvailableTools.pen]) {
       this.draw(x, y);
     } else if (activeTools[AvailableTools.eraser]) {
       this.erase(x, y);
     }
+  }
+
+  /**
+   * Calculates the canvas coordinates from the clientX and clientY values.
+   *
+   * @param {number} clientX - The X coordinate of the mouse/touch event.
+   * @param {number} clientY - The Y coordinate of the mouse/touch event.
+   * @returns {Object} - The canvas coordinates as { x, y }.
+   */
+  calculateCanvasCoordinates(clientX, clientY) {
+    const rect = this.canvas.getBoundingClientRect();
+
+    const x = Math.floor((this.width * (clientX - rect.left)) / this.canvas.clientWidth);
+    const y = Math.floor((this.height * (clientY - rect.top)) / this.canvas.clientHeight);
+
+    return { x, y };
   }
 
   /**
