@@ -1,4 +1,4 @@
-export const Tool = {
+export const AvailableTools = {
   pen: 0,
   eraser: 1,
   fillBucket: 2,
@@ -14,4 +14,4 @@ export const Tool = {
 /**
  * Array representing the current active state of each tool.
  */
-export let activeTools = [true, false, false, false, false, false];
+export var activeTools = [true, false, false, false, false, false];

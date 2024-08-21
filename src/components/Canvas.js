@@ -1,4 +1,4 @@
-import { Tool, activeTools } from "./Tool.js";
+import { AvailableTools, activeTools } from "./Tool.js";
 import { bucketFill } from "../helpers/bucketFill.js";
 
 /**
@@ -60,15 +60,15 @@ export class Canvas {
     x = Math.floor((this.width * x) / this.canvas.clientWidth);
     y = Math.floor((this.height * y) / this.canvas.clientHeight);
 
-    if (activeTools[Tool.fillBucket]) {
+    if (activeTools[AvailableTools.fillBucket]) {
       bucketFill(x, y, this.data[x][y]);
-    } else if (activeTools[Tool.eraser]) {
+    } else if (activeTools[AvailableTools.eraser]) {
       this.erase(x, y);
-    } else if (activeTools[Tool.line]) {
+    } else if (activeTools[AvailableTools.line]) {
       this.drawLine(x, y);
-    } else if (activeTools[Tool.circle]) {
+    } else if (activeTools[AvailableTools.circle]) {
       this.drawCircle(x, y);
-    } else if (activeTools[Tool.ellipse]) {
+    } else if (activeTools[AvailableTools.ellipse]) {
       this.drawEllipse(x, y);
     } else {
       this.draw(x, y);
@@ -87,9 +87,9 @@ export class Canvas {
       x = Math.floor((this.width * x) / this.canvas.clientWidth);
       y = Math.floor((this.height * y) / this.canvas.clientHeight);
 
-      if (activeTools[Tool.pen]) {
+      if (activeTools[AvailableTools.pen]) {
         this.draw(x, y);
-      } else if (activeTools[Tool.eraser]) {
+      } else if (activeTools[AvailableTools.eraser]) {
         this.erase(x, y);
       }
     }
@@ -106,9 +106,9 @@ export class Canvas {
     x = Math.floor((this.width * x) / this.canvas.clientWidth);
     y = Math.floor((this.height * y) / this.canvas.clientHeight);
 
-    if (activeTools[Tool.pen]) {
+    if (activeTools[AvailableTools.pen]) {
       this.draw(x, y);
-    } else if (activeTools[Tool.eraser]) {
+    } else if (activeTools[AvailableTools.eraser]) {
       this.erase(x, y);
     }
   }
@@ -264,7 +264,7 @@ export class Canvas {
     this.ctx.fillRect(0, 0, this.pixelWidth, this.pixelHeight);
     this.data = [...Array(this.width)].map(() => Array(this.height).fill([255, 255, 255, 255]));
     this.setcolor(this.color);
-    this.setmode(Tool.pen);
+    this.setmode(AvailableTools.pen);
   }
 
   addSnapshot(data = null) {
