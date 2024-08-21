@@ -16,8 +16,8 @@ body {
   margin: 0;
 }
 
-/* Popup and Snapshots */
-#popup,
+/* NewProjectPopup and Snapshots */
+#newProjectPopup,
 #snapshots {
   background-color: #332f35;
   color: white;
@@ -36,11 +36,11 @@ body {
   border-radius: 5px;
 }
 
-#popup {
+#newProjectPopup {
   display: none;
 }
 
-#popup h3 {
+#newProjectPopup h3 {
   line-height: 30px;
 }
 

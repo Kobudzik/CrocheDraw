@@ -1,4 +1,4 @@
-import { Popup } from "../components/Popup.js";
+import { NewProjectPopup } from "../components/NewProjectPopup.js";
 
 /**
  * Highlights the selected color in the palette by applying a box shadow effect.
@@ -12,7 +12,7 @@ export function newProject() {
   document.querySelector(".menu").style.display = "none";
   localStorage.removeItem("pc-canvas-data");
 
-  window.dim = new Popup("#popup");
+  window.dim = new NewProjectPopup("#newProjectPopup");
 
   window.colors = [
     [0, 0, 0, 255], // Black
