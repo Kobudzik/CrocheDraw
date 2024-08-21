@@ -12,7 +12,6 @@ export class Snapshots {
     // Display the snapshots gallery and set its initial transform properties
     const snapshotsElement = document.querySelector("#snapshots");
     snapshotsElement.style.display = "block";
-    snapshotsElement.style.transform = "translate(-50%,-50%) scale(1,1)";
     snapshotsElement.focus();
 
     // Clear the current gallery content
@@ -49,6 +48,6 @@ export class Snapshots {
    */
   static close() {
     const snapshotsElement = document.querySelector("#snapshots");
-    snapshotsElement.style.transform = "translate(-50%,-50%) scale(0,0)";
+    snapshotsElement.style.display = "none";
   }
 }

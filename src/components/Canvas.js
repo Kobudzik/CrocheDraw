@@ -231,8 +231,6 @@ export class Canvas {
 
   /**
    * Sets the current tool mode and updates the toolbar UI.
-   *
-   * @param {number} i - The tool index to activate.
    */
   setmode(i) {
     activeTools.fill(false);
@@ -244,9 +242,6 @@ export class Canvas {
     });
   }
 
-  /**
-   * Exports the current canvas as an image file.
-   */
   exportAsImage() {
     this.canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob);
@@ -257,9 +252,6 @@ export class Canvas {
     });
   }
 
-  /**
-   * Clears the canvas, resetting it to a white background.
-   */
   clearCanvas() {
     this.ctx.fillStyle = "white";
     this.ctx.fillRect(0, 0, this.w, this.h);
@@ -268,22 +260,12 @@ export class Canvas {
     this.setmode(Tool.pen);
   }
 
-  /**
-   * Adds the current frame to the list of snapshots, storing its data.
-   *
-   * @param {string} [data=null] - Optional image data URL to store.
-   */
   addSnapshot(data = null) {
     const img = new Image();
     img.src = data || this.canvas.toDataURL();
     this.snapshots.push([img, this.data.map((inner) => inner.slice())]);
   }
 
-  /**
-   * Deletes a frame from the list of snapshots.
-   *
-   * @param {number} f - The index of the frame to delete.
-   */
   deleteSnapshot(f) {
     this.snapshots.splice(f, 1);
   }
@@ -329,7 +311,9 @@ export class Canvas {
    */
   undo() {
     this.clearCanvas();
+
     this.redo_arr.push(this.steps.pop());
+
     this.steps.forEach((step) => {
       this.setcolor(step[2]);
       this.ctx.globalAlpha = step[3];
@@ -342,9 +326,11 @@ export class Canvas {
    */
   redo() {
     this.steps.push(this.redo_arr.pop());
+
     this.steps.forEach((step) => {
       this.setcolor(step[2]);
       this.ctx.globalAlpha = step[3];
+
       this.draw(step[0], step[1], true);
     });
   }
@@ -353,7 +339,7 @@ export class Canvas {
    * Saves the current canvas state in local storage for later retrieval.
    */
   saveInLocal() {
-    const d = {
+    const currentData = {
       colors: window.colors,
       currColor: this.color,
       width: this.width,
@@ -363,14 +349,10 @@ export class Canvas {
       redo_arr: this.redo_arr,
       dim: window.dim,
     };
-    localStorage.setItem("pc-canvas-data", JSON.stringify(d));
+    localStorage.setItem("pc-canvas-data", JSON.stringify(currentData));
   }
 
-  /**
-   * Adds an image from the user's file system to the canvas, processing it
-   * to fit within the canvas dimensions.
-   */
-  addImage() {
+  importImage() {
     const inputFile = document.createElement("input");
     inputFile.type = "file";
     inputFile.accept = "image/*";
