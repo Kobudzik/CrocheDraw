@@ -1,5 +1,5 @@
 import { Canvas } from "./components/Canvas.js";
-import { newProject, initWindowGIF } from "./helpers/utils.js";
+import { newProject, loadProject, initWindowGIF } from "./helpers/utils.js";
 
 window.onload = function () {
   let canvasData = localStorage.getItem("pc-canvas-data");
@@ -13,24 +13,6 @@ window.onload = function () {
 
   document.querySelector("#palette").addEventListener("contextmenu", (e) => e.preventDefault());
 };
-
-function loadProject(canvasData) {
-  const data = JSON.parse(canvasData);
-
-  window.colors = data.colors;
-  window.board = new Canvas(data.width, data.height);
-  window.board.steps = data.steps;
-  window.board.redo_arr = data.redo_arr;
-  window.board.setcolor(data.currColor);
-
-  const img = new Image();
-  img.setAttribute("src", data.url);
-  img.addEventListener("load", function () {
-    window.board.ctx.drawImage(img, 0, 0);
-  });
-
-  initWindowGIF();
-}
 
 function renderColors() {
   document.querySelector("#palette").innerHTML = colors

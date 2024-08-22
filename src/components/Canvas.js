@@ -271,6 +271,11 @@ export class Canvas {
   undo() {
     this.clearCanvas();
 
+    if (this.redoStack.length === 0) {
+      console.warn("No steps to redo.");
+      return;
+    }
+
     this.undoStack.push(this.redoStack.pop());
 
     this.redoStack.forEach((step) => {
@@ -281,6 +286,11 @@ export class Canvas {
   }
 
   redo() {
+    if (this.undoStack.length === 0) {
+      console.warn("No steps to redo.");
+      return;
+    }
+
     this.redoStack.push(this.undoStack.pop());
 
     this.redoStack.forEach((step) => {
