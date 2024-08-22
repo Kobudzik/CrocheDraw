@@ -11,7 +11,7 @@ export function bucketFill(canvasInstance, x, y, targetColor) {
   const differentFromNewColor = (color) => JSON.stringify(color) !== JSON.stringify(canvasInstance.color);
 
   if (withinBounds && matchTargetColor(canvasInstance.data[x][y]) && differentFromNewColor(canvasInstance.data[x][y])) {
-    canvasInstance.draw(x, y);
+    canvasInstance.tryDraw(x, y);
 
     bucketFill(canvasInstance, x + 1, y, targetColor);
     bucketFill(canvasInstance, x, y + 1, targetColor);
