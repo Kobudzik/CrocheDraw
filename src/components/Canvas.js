@@ -363,18 +363,4 @@ export class Canvas {
     this.setcolor(tmp_color);
     this.ctx.globalAlpha = tmp_alpha;
   }
-
-  /**
-   * Renders a GIF from the snapshots stored in the canvas.
-   */
-  renderGIF() {
-    this.snapshots.forEach((frame) => {
-      gif.addSnapshot(frame[0], {
-        copy: true,
-        delay: 100,
-      });
-    });
-    gif.render();
-  }
-  //#endregion snapshots
 }

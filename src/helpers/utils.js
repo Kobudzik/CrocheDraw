@@ -54,25 +54,6 @@ export function loadProject(canvasData) {
   img.addEventListener("load", function () {
     window.board.ctx.drawImage(img, 0, 0);
   });
-
-  initWindowGIF();
-}
-
-export function initWindowGIF() {
-  window.gif = new GIF({
-    workers: 2,
-    quality: 10,
-    width: 10 * window.board.width,
-    height: 10 * window.board.height,
-  });
-
-  window.gif.on("finished", function (blob) {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.download = "canvas.gif";
-    link.href = url;
-    link.click();
-  });
 }
 
 export function calculateAverageColor(pixelData) {

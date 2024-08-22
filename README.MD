@@ -82,9 +82,9 @@ This Tool is Used to import an image and convert it to Pixel Art of Given Dimens
 ![Mona Lisa](https://user-images.githubusercontent.com/17960677/96027216-2df62280-0e75-11eb-880d-c1eed2a21fd6.png)
 ![Mona Lisa Pixelated](https://user-images.githubusercontent.com/17960677/96027394-71509100-0e75-11eb-8260-c1ed426805bc.png)
 
-## Saving Pixel Art and GIF Animation
+## Saving Pixel Art
 
-Once you are done with making your pixel art or animation frames you can export it as a PNG or GIF to share it on other platforms.
+Once you are done with making your pixel art or animation frames you can export it as a PNG to share it on other platforms.
 
 ### Exporting Image
 

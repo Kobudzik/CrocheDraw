@@ -1,5 +1,5 @@
 import { Canvas } from "./components/Canvas.js";
-import { newProject, loadProject, initWindowGIF } from "./helpers/utils.js";
+import { newProject, loadProject } from "./helpers/utils.js";
 
 window.onload = function () {
   let canvasData = localStorage.getItem("pc-canvas-data");
@@ -36,8 +36,6 @@ document.querySelector("#close").onclick = function () {
   window.board.setcolor([0, 0, 0, 255]);
 
   document.querySelector("#newProjectPopup").style.display = "none";
-
-  initWindowGIF();
 };
 
 document.querySelector(".menubtn").onclick = function () {
