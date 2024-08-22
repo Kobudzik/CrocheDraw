@@ -71,7 +71,7 @@ export class Canvas {
     } else if (activeTools[AvailableTools.ellipse]) {
       this.drawEllipse(x, y);
     } else {
-      this.draw(x, y);
+      this.tryDraw(x, y);
     }
   }
 
@@ -105,7 +105,7 @@ export class Canvas {
    */
   handleToolAction(x, y) {
     if (activeTools[AvailableTools.pen]) {
-      this.draw(x, y);
+      this.tryDraw(x, y);
     } else if (activeTools[AvailableTools.eraser]) {
       this.erase(x, y);
     }
@@ -131,8 +131,8 @@ export class Canvas {
    * Draws on the canvas at the specified (x, y) coordinates.
    * Tracks the steps taken for undo/redo functionality if applicable.
    */
-  draw(x, y, skipTrack = false) {
-    if (this.isInBounds(x, y)) {
+  tryDraw(x, y, skipTrack = false) {
+    if (this.isInCanvasBounds(x, y)) {
       this.updateCanvasData(x, y);
       this.renderPixel(x, y);
 
@@ -142,23 +142,14 @@ export class Canvas {
     }
   }
 
-  /**
-   * Helper method to check if the coordinates are within canvas bounds.
-   */
-  isInBounds(x, y) {
+  isInCanvasBounds(x, y) {
     return x >= 0 && x < this.width && y >= 0 && y < this.height;
   }
 
-  /**
-   * Updates the canvas data at the specified coordinates with the current color.
-   */
   updateCanvasData(x, y) {
     this.data[x][y] = this.color;
   }
 
-  /**
-   * Renders a pixel on the canvas at the specified coordinates.
-   */
   renderPixel(x, y) {
     const renderPixelWidth = Math.floor(this.canvas.width / this.width);
     const renderPixelHeight = Math.floor(this.canvas.height / this.height);
@@ -198,7 +189,7 @@ export class Canvas {
     if (this.drawLineCoordinates.length === 2) {
       const lp = line(this.drawLineCoordinates[0], this.drawLineCoordinates[1]);
       this.drawLineCoordinates = [];
-      lp.forEach((p) => this.draw(p.x, p.y));
+      lp.forEach((p) => this.tryDraw(p.x, p.y));
     }
   }
 
@@ -209,7 +200,7 @@ export class Canvas {
     const centre = new Point(x, y);
     const radius = +prompt("radius?");
     const lp = circle(radius, centre);
-    lp.forEach((p) => this.draw(p.x, p.y));
+    lp.forEach((p) => this.tryDraw(p.x, p.y));
   }
 
   /**
@@ -220,7 +211,7 @@ export class Canvas {
     const radiusX = +prompt("X radius?");
     const radiusY = +prompt("Y radius?");
     const lp = ellipse(radiusX, radiusY, center);
-    lp.forEach((p) => this.draw(p.x, p.y));
+    lp.forEach((p) => this.tryDraw(p.x, p.y));
   }
 
   /**
@@ -230,7 +221,7 @@ export class Canvas {
     const temp = this.color;
     const tga = this.ctx.globalAlpha;
     this.setcolor([255, 255, 255, 255]);
-    this.draw(x, y);
+    this.tryDraw(x, y);
     this.setcolor(temp);
     this.ctx.globalAlpha = tga;
   }
@@ -277,52 +268,6 @@ export class Canvas {
     this.setmode(AvailableTools.pen);
   }
 
-  addSnapshot(data = null) {
-    const img = new Image();
-    img.src = data || this.canvas.toDataURL();
-    this.snapshots.push([img, this.data.map((inner) => inner.slice())]);
-  }
-
-  deleteSnapshot(f) {
-    this.snapshots.splice(f, 1);
-  }
-
-  /**
-   * Loads a specific frame and redraws it on the canvas.
-   *
-   * @param {number} f - The index of the frame to load.
-   */
-  loadSnapshot(f) {
-    this.clearCanvas();
-    const img = this.snapshots[f][1];
-    const tmp_color = this.color;
-    const tmp_alpha = this.ctx.globalAlpha;
-    this.ctx.globalAlpha = 1;
-
-    for (let i = 0; i < this.width; i++) {
-      for (let j = 0; j < this.height; j++) {
-        this.setcolor(img[i][j]);
-        this.draw(i, j);
-      }
-    }
-
-    this.setcolor(tmp_color);
-    this.ctx.globalAlpha = tmp_alpha;
-  }
-
-  /**
-   * Renders a GIF from the snapshots stored in the canvas.
-   */
-  renderGIF() {
-    this.snapshots.forEach((frame) => {
-      gif.addSnapshot(frame[0], {
-        copy: true,
-        delay: 100,
-      });
-    });
-    gif.render();
-  }
-
   undo() {
     this.clearCanvas();
 
@@ -331,7 +276,7 @@ export class Canvas {
     this.redoStack.forEach((step) => {
       this.setcolor(step[2]);
       this.ctx.globalAlpha = step[3];
-      this.draw(step[0], step[1], true);
+      this.tryDraw(step[0], step[1], true);
     });
   }
 
@@ -342,7 +287,7 @@ export class Canvas {
       this.setcolor(step[2]);
       this.ctx.globalAlpha = step[3];
 
-      this.draw(step[0], step[1], true);
+      this.tryDraw(step[0], step[1], true);
     });
   }
 
@@ -370,8 +315,56 @@ export class Canvas {
         const avgColor = calculateAverageColor(pixelData);
 
         this.setcolor(avgColor);
-        this.draw(i, j);
+        this.tryDraw(i, j);
       }
     }
   }
+
+  //#region snapshots
+  addSnapshot(data = null) {
+    const img = new Image();
+    img.src = data || this.canvas.toDataURL();
+    this.snapshots.push([img, this.data.map((inner) => inner.slice())]);
+  }
+
+  deleteSnapshot(f) {
+    this.snapshots.splice(f, 1);
+  }
+
+  /**
+   * Loads a specific frame and redraws it on the canvas.
+   *
+   * @param {number} f - The index of the frame to load.
+   */
+  loadSnapshot(f) {
+    this.clearCanvas();
+    const img = this.snapshots[f][1];
+    const tmp_color = this.color;
+    const tmp_alpha = this.ctx.globalAlpha;
+    this.ctx.globalAlpha = 1;
+
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        this.setcolor(img[i][j]);
+        this.tryDraw(i, j);
+      }
+    }
+
+    this.setcolor(tmp_color);
+    this.ctx.globalAlpha = tmp_alpha;
+  }
+
+  /**
+   * Renders a GIF from the snapshots stored in the canvas.
+   */
+  renderGIF() {
+    this.snapshots.forEach((frame) => {
+      gif.addSnapshot(frame[0], {
+        copy: true,
+        delay: 100,
+      });
+    });
+    gif.render();
+  }
+  //#endregion snapshots
 }
