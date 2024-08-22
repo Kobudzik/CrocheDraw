@@ -53,3 +53,17 @@ export function initWindowGIF() {
     link.click();
   });
 }
+
+export function calculateAverageColor(pixelData) {
+  let count = 0;
+  const avgColor = [0, 0, 0, 0];
+
+  for (let i = 0; i < pixelData.length; i += 4) {
+    for (let j = 0; j < 4; j++) {
+      avgColor[j] += pixelData[i + j];
+    }
+    count++;
+  }
+
+  return avgColor.map((value) => Math.floor(value / count));
+}

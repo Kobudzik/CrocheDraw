@@ -1,5 +1,6 @@
 import { AvailableTools, activeTools } from "./Tools.js";
 import { bucketFill } from "../helpers/bucketFill.js";
+import { calculateAverageColor } from "../helpers/utils.js";
 
 /**
  * The Canvas class represents the drawing canvas within the application.
@@ -362,66 +363,15 @@ export class Canvas {
     localStorage.setItem("pc-canvas-data", JSON.stringify(currentData));
   }
 
-  //#region import image
-  importImage() {
-    const inputFile = document.createElement("input");
-    inputFile.type = "file";
-    inputFile.accept = "image/*";
-
-    inputFile.addEventListener("change", (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
-
-        fileReader.onload = () => {
-          this.processImage(fileReader.result);
-        };
-      }
-    });
-
-    inputFile.click();
-  }
-
-  processImage(imageDataURL) {
-    const image = new Image();
-    image.src = imageDataURL;
-
-    image.onload = () => {
-      const tempCanvas = document.createElement("canvas");
-      tempCanvas.width = this.canvas.width;
-      tempCanvas.height = this.canvas.height;
-      const tempCtx = tempCanvas.getContext("2d");
-      tempCtx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
-
-      this.updateCanvasWithImage(tempCtx);
-    };
-  }
-
-  updateCanvasWithImage(ctx) {
+  replaceCanvasWithOther(canvasContext) {
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
-        const pixelData = ctx.getImageData(10 * i, 10 * j, 10, 10).data;
-        const avgColor = this.calculateAverageColor(pixelData);
+        const pixelData = canvasContext.getImageData(10 * i, 10 * j, 10, 10).data;
+        const avgColor = calculateAverageColor(pixelData);
 
         this.setcolor(avgColor);
         this.draw(i, j);
       }
     }
   }
-
-  calculateAverageColor(pixelData) {
-    let count = 0;
-    const avgColor = [0, 0, 0, 0];
-
-    for (let i = 0; i < pixelData.length; i += 4) {
-      for (let j = 0; j < 4; j++) {
-        avgColor[j] += pixelData[i + j];
-      }
-      count++;
-    }
-
-    return avgColor.map((value) => Math.floor(value / count));
-  }
-  //#endregion import
 }

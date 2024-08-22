@@ -33,10 +33,12 @@
       import { newProject } from "./src/helpers/utils.js";
       import { setActiveColor } from "./src/helpers/utils.js";
       import { Snapshots } from "./src/components/Snapshots.js";
+      import { handleImportImage } from "./src/helpers/imageImportHelper.js";
 
       //methods
       window.newProject = newProject;
       window.setActiveColor = setActiveColor;
+      window.handleImportImage = handleImportImage;
 
       //objects
       window.snapshots = Snapshots;
@@ -105,7 +107,7 @@
       <span class="item" onclick="board.clearCanvas()">
         <i class="fas fa-trash"></i>
       </span>
-      <span class="item" onclick="board.importImage()">
+      <span class="item" onclick="window.handleImportImage(board)">
         <i class="fa fa-upload"></i>
       </span>
       <span class="item" onclick="snapshots.open()">
