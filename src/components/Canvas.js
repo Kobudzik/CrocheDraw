@@ -61,7 +61,7 @@ export class Canvas {
     const y = Math.floor((this.height * (clientY - top)) / clientHeight);
 
     if (activeTools[AvailableTools.fillBucket]) {
-      bucketFill(x, y, this.data[x][y]);
+      bucketFill(this, x, y, this.data[x][y]);
     } else if (activeTools[AvailableTools.eraser]) {
       this.erase(x, y);
     } else if (activeTools[AvailableTools.line]) {
