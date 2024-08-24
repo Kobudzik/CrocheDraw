@@ -1,4 +1,4 @@
-export function InitColors() {
+export function initColors() {
   window.colors = [
     [0, 0, 0, 255], // Black
     [255, 255, 255, 255], // White

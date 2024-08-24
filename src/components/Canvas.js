@@ -2,6 +2,8 @@ import { AvailableTools, activeTools, setToolmode } from "./Tools.js";
 import { bucketFill } from "../helpers/bucketFill.js";
 import { calculateAverageColor } from "../helpers/utils.js";
 import SnapshotsManager from "./SnapshotsManager.js";
+import { drawLine, drawCircle, drawEllipse, tryDraw } from "../helpers/drawHelper.js";
+import { Point } from "../../lib/Shapes.js";
 
 /**
  * The Canvas class represents the drawing canvas within the application.
@@ -67,13 +69,13 @@ export class Canvas {
     } else if (activeTools[AvailableTools.eraser]) {
       this.erase(x, y);
     } else if (activeTools[AvailableTools.line]) {
-      this.drawLine(x, y);
+      this.tryDrawLine(x, y);
     } else if (activeTools[AvailableTools.circle]) {
-      this.drawCircle(x, y);
+      drawCircle(this, x, y);
     } else if (activeTools[AvailableTools.ellipse]) {
-      this.drawEllipse(x, y);
+      drawEllipse(this, x, y);
     } else {
-      this.tryDraw(x, y);
+      tryDraw(this, x, y);
     }
   }
 
@@ -107,7 +109,7 @@ export class Canvas {
    */
   handleToolAction(x, y) {
     if (activeTools[AvailableTools.pen]) {
-      this.tryDraw(x, y);
+      tryDraw(this, x, y);
     } else if (activeTools[AvailableTools.eraser]) {
       this.erase(x, y);
     }
@@ -129,101 +131,19 @@ export class Canvas {
     return { x, y };
   }
 
-  /**
-   * Draws on the canvas at the specified (x, y) coordinates.
-   * Tracks the steps taken for undo/redo functionality if applicable.
-   */
-  tryDraw(x, y, skipTrack = false) {
-    if (this.isInCanvasBounds(x, y)) {
-      this.updateCanvasData(x, y);
-      this.renderPixel(x, y);
-
-      if (!skipTrack) {
-        this.trackSteps(x, y);
-      }
-    }
-  }
-
-  isInCanvasBounds(x, y) {
-    return x >= 0 && x < this.width && y >= 0 && y < this.height;
-  }
-
-  updateCanvasData(x, y) {
-    this.data[x][y] = this.color;
-  }
-
-  renderPixel(x, y) {
-    const renderPixelWidth = Math.floor(this.canvas.width / this.width);
-    const renderPixelHeight = Math.floor(this.canvas.height / this.height);
-
-    const renderX = Math.floor(x * renderPixelWidth);
-    const renderY = Math.floor(y * renderPixelHeight);
-
-    this.ctx.fillRect(renderX, renderY, renderPixelWidth, renderPixelHeight);
-  }
-
-  /**
-   * Tracks the drawing steps taken, storing them for undo/redo functionality.
-   */
-  trackSteps(x, y) {
-    const currentStep = [x, y, this.color, this.ctx.globalAlpha];
-    if (this.redoStack.length === 0 || !this.isLastStepEqual(currentStep)) {
-      this.redoStack.push(currentStep);
-    }
-  }
-
-  /**
-   * Compares the current step with the last step in the stack.
-   *
-   * @param {Array} step - The current step to compare.
-   * @returns {boolean} - Returns true if the current step is equal to the last step, false otherwise.
-   */
-  isLastStepEqual(step) {
-    const lastStep = this.redoStack.at(-1);
-    return JSON.stringify(lastStep) === JSON.stringify(step);
-  }
-
-  /**
-   * Draws a line between two points on the canvas.
-   */
-  drawLine(x, y) {
+  tryDrawLine(x, y) {
     this.drawLineCoordinates.push(new Point(x, y));
     if (this.drawLineCoordinates.length === 2) {
-      const lp = line(this.drawLineCoordinates[0], this.drawLineCoordinates[1]);
+      drawLine(this, this.drawLineCoordinates);
       this.drawLineCoordinates = [];
-      lp.forEach((p) => this.tryDraw(p.x, p.y));
     }
   }
 
-  /**
-   * Draws a circle on the canvas at the specified coordinates with a specified radius.
-   */
-  drawCircle(x, y) {
-    const centre = new Point(x, y);
-    const radius = +prompt("radius?");
-    const lp = circle(radius, centre);
-    lp.forEach((p) => this.tryDraw(p.x, p.y));
-  }
-
-  /**
-   * Draws an ellipse on the canvas at the specified coordinates with specified radii.
-   */
-  drawEllipse(x, y) {
-    const center = new Point(x, y);
-    const radiusX = +prompt("X radius?");
-    const radiusY = +prompt("Y radius?");
-    const lp = ellipse(radiusX, radiusY, center);
-    lp.forEach((p) => this.tryDraw(p.x, p.y));
-  }
-
-  /**
-   * Erases a pixel on the canvas by setting it to white.
-   */
   erase(x, y) {
     const temp = this.color;
     const tga = this.ctx.globalAlpha;
     this.setcolor([255, 255, 255, 255]);
-    this.tryDraw(x, y);
+    tryDraw(this, x, y);
     this.setcolor(temp);
     this.ctx.globalAlpha = tga;
   }
@@ -260,7 +180,7 @@ export class Canvas {
     this.redoStack.forEach((step) => {
       this.setcolor(step[2]);
       this.ctx.globalAlpha = step[3];
-      this.tryDraw(step[0], step[1], true);
+      tryDraw(step[0], step[1], true);
     });
   }
 
@@ -276,7 +196,7 @@ export class Canvas {
       this.setcolor(step[2]);
       this.ctx.globalAlpha = step[3];
 
-      this.tryDraw(step[0], step[1], true);
+      tryDraw(step[0], step[1], true);
     });
   }
 
@@ -287,7 +207,7 @@ export class Canvas {
         const avgColor = calculateAverageColor(pixelData);
 
         this.setcolor(avgColor);
-        this.tryDraw(i, j);
+        tryDraw(i, j);
       }
     }
   }
@@ -310,7 +230,7 @@ export class Canvas {
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
         this.setcolor(img[i][j]);
-        this.tryDraw(i, j);
+        tryDraw(i, j);
       }
     }
 

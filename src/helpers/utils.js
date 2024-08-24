@@ -1,5 +1,5 @@
 import { Canvas } from "../components/Canvas.js";
-import { initColors } from "./components/Colors.js";
+import { initColors } from "../components/Colors.js";
 
 /**
  * Highlights the selected color in the palette by applying a box shadow effect.
