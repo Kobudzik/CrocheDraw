@@ -1,4 +1,4 @@
-import { AvailableTools, activeTools } from "./Tools.js";
+import { AvailableTools, activeTools, setToolmode } from "./Tools.js";
 import { bucketFill } from "../helpers/bucketFill.js";
 import { calculateAverageColor } from "../helpers/utils.js";
 import SnapshotsManager from "./SnapshotsManager.js";
@@ -244,7 +244,7 @@ export class Canvas {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.data = [...Array(this.width)].map(() => Array(this.height).fill([255, 255, 255, 255]));
     this.setcolor(this.color);
-    this.setmode(AvailableTools.pen);
+    setToolmode(AvailableTools.pen);
   }
 
   undo() {

@@ -50,6 +50,7 @@ window.onbeforeunload = function () {
 window.onerror = function (errorMsg, url, lineNumber) {
   alert("Error: " + errorMsg + " Script: " + url + " Line: " + lineNumber);
 };
+
 //#region serviceWorker
 function install() {
   msg.prompt();
