@@ -14,6 +14,7 @@
       import { newProject } from "./src/helpers/utils.js";
       import { setActiveColor, exportAsImage } from "./src/helpers/utils.js";
       import { SnapshotsGallery } from "./src/components/SnapshotsGallery.js";
+      import { setToolmode } from "./src/components/Tools.js";
       import { handleImportImage } from "./src/helpers/imageImportHelper.js";
 
       //methods
@@ -21,6 +22,7 @@
       window.setActiveColor = setActiveColor;
       window.handleImportImage = handleImportImage;
       window.exportAsImage = exportAsImage;
+      window.setToolmode = setToolmode;
 
       //objects
       window.snapshotsGallery = SnapshotsGallery;
@@ -59,22 +61,22 @@
     </div>
     <canvas id="canvas"></canvas>
     <div id="toolbar">
-      <span class="item" onclick="board.setmode(0)" style="background-color: grey">
+      <span class="item" onclick="setToolmode(0)" style="background-color: grey">
         <i class="fas fa-pencil-alt"></i>
       </span>
-      <span class="item" onclick="board.setmode(1)">
+      <span class="item" onclick="setToolmode(1)">
         <i class="fas fa-eraser"></i>
       </span>
-      <span class="item" onclick="board.setmode(2)">
+      <span class="item" onclick="setToolmode(2)">
         <i class="fas fa-fill"></i>
       </span>
-      <span class="item" onclick="board.setmode(3)">
+      <span class="item" onclick="setToolmode(3)">
         <i class="fas fa-slash"></i>
       </span>
-      <span class="item" onclick="board.setmode(4)">
+      <span class="item" onclick="setToolmode(4)">
         <i class="far fa-circle"></i>
       </span>
-      <span class="item" onclick="board.setmode(5)">
+      <span class="item" onclick="setToolmode(5)">
         <i class="far fa-circle" style="transform: rotateX(45deg)"></i>
       </span>
       <span class="item" onclick="board.snapshotsManager.addSnapshot(board.data, board.ctx)">

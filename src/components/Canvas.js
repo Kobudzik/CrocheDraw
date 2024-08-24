@@ -239,19 +239,6 @@ export class Canvas {
     this.ctx.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${color[3]})`;
   }
 
-  /**
-   * Sets the current tool mode and updates the toolbar UI.
-   */
-  setmode(i) {
-    activeTools.fill(false);
-    activeTools[i] = true;
-
-    //diselect all colors from palette
-    document.querySelectorAll("#toolbar .item").forEach((x, i) => {
-      x.style.backgroundColor = activeTools[i] ? "grey" : "";
-    });
-  }
-
   clearCanvas() {
     this.ctx.fillStyle = "white";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
