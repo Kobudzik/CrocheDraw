@@ -12,14 +12,14 @@
 
     <script type="module">
       import { newProject } from "./src/helpers/utils.js";
-      import { setActiveColor, exportAsImage } from "./src/helpers/utils.js";
+      import { markActiveColor, exportAsImage } from "./src/helpers/utils.js";
       import { SnapshotsGallery } from "./src/components/SnapshotsGallery.js";
       import { setToolmode } from "./src/components/Tools.js";
       import { handleImportImage } from "./src/helpers/imageImportHelper.js";
 
       //methods
       window.newProject = newProject;
-      window.setActiveColor = setActiveColor;
+      window.markActiveColor = markActiveColor;
       window.handleImportImage = handleImportImage;
       window.exportAsImage = exportAsImage;
       window.setToolmode = setToolmode;

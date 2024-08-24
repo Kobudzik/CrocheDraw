@@ -1,4 +1,5 @@
 import { Canvas } from "./components/Canvas.js";
+import { renderColors } from "./components/Colors.js";
 import { newProject, loadProject, saveInLocal } from "./helpers/utils.js";
 
 window.onload = function () {
@@ -13,20 +14,6 @@ window.onload = function () {
 
   document.querySelector("#palette").addEventListener("contextmenu", (e) => e.preventDefault());
 };
-
-function renderColors() {
-  document.querySelector("#palette").innerHTML = colors
-    .map(
-      (x) => `
-      <span
-        class="item" style="background-color: rgb(${x[0]},${x[1]},${x[2]})" 
-        onclick="board.setcolor([${x}]);setActiveColor(this);"
-        oncontextmenu="board.setcolor([${x}]);setActiveColor(this);board.ctx.globalAlpha=+prompt('Transparency(0-1)?')"
-      >
-      </span>`
-    )
-    .join("\n");
-}
 
 document.querySelector("#close").onclick = function () {
   const width = +document.querySelector("#width").value;
