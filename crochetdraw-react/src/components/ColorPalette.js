@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 
-const ColorPalette = ({ colors, onColorChange }) => {
+const ColorPalette = ({ colors, activeColor, onColorChange }) => {
   useEffect(() => {
     // Any additional setup can be done here if needed
-    console.log(colors);
   }, []);
 
   const handleColorClick = (color) => {
@@ -31,6 +30,7 @@ const ColorPalette = ({ colors, onColorChange }) => {
             display: "inline-block",
             margin: "2px",
             cursor: "pointer",
+            boxShadow: activeColor === color ? "rgba(255, 255, 255, 0.5) 0 0 10px 5px" : "",
           }}
           onClick={() => handleColorClick(color)}
           onContextMenu={(e) => handleColorContextMenu(e, color)}

@@ -2,50 +2,36 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt, faEraser, faFill, faSlash, faPlus, faUndo, faRedo, faTrash, faUpload, faEye } from "@fortawesome/free-solid-svg-icons";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
+import { AvailableTools } from "../utils/Tools";
 
-function Toolbar({ board }) {
-  const handleToolModeChange = (mode) => {
-    console.log(`Tool mode changed to: ${mode}`);
+const tools = [
+  { icon: faPencilAlt, toolIndex: 0, action: AvailableTools.pen },
+  { icon: faEraser, toolIndex: 1, action: AvailableTools.eraser },
+  { icon: faFill, toolIndex: 2, action: AvailableTools.fillBucket },
+  { icon: faSlash, toolIndex: 3, action: AvailableTools.line },
+  { icon: faCircle, toolIndex: 4, action: AvailableTools.circle },
+  { icon: faCircle, toolIndex: 5, action: AvailableTools.ellipse, style: { transform: "rotateX(45deg)" } },
+  { icon: faPlus, toolIndex: 6 }, //save snapshot
+  { icon: faUndo, toolIndex: 7 }, //undo
+  { icon: faRedo, toolIndex: 8 }, //redo
+  { icon: faTrash, toolIndex: 9 }, //clear
+  { icon: faUpload, toolIndex: 10 }, //upload
+  { icon: faEye, toolIndex: 11 }, //view snaphsots
+];
+
+function Toolbar({ activeTools, setActiveTools }) {
+  const handleToolModeChange = (toolIndex) => {
+    const updatedState = activeTools.map((_, index) => index === toolIndex);
+    setActiveTools(updatedState);
   };
 
   return (
     <div id="toolbar">
-      <span className="item" onClick={() => handleToolModeChange(0)} style={{ backgroundColor: "grey" }}>
-        <FontAwesomeIcon icon={faPencilAlt} />
-      </span>
-      <span className="item" onClick={() => handleToolModeChange(1)}>
-        <FontAwesomeIcon icon={faEraser} />
-      </span>
-      <span className="item" onClick={() => handleToolModeChange(2)}>
-        <FontAwesomeIcon icon={faFill} />
-      </span>
-      <span className="item" onClick={() => handleToolModeChange(3)}>
-        <FontAwesomeIcon icon={faSlash} />
-      </span>
-      <span className="item" onClick={() => handleToolModeChange(4)}>
-        <FontAwesomeIcon icon={faCircle} />
-      </span>
-      <span className="item" onClick={() => handleToolModeChange(5)}>
-        <FontAwesomeIcon icon={faCircle} style={{ transform: "rotateX(45deg)" }} />
-      </span>
-      <span className="item" onClick={() => board.snapshotsManager.addSnapshot(board.data, board.ctx)}>
-        <FontAwesomeIcon icon={faPlus} />
-      </span>
-      <span className="item" onClick={() => board.undo()}>
-        <FontAwesomeIcon icon={faUndo} />
-      </span>
-      <span className="item" onClick={() => board.redo()}>
-        <FontAwesomeIcon icon={faRedo} />
-      </span>
-      <span className="item" onClick={() => board.clearCanvas()}>
-        <FontAwesomeIcon icon={faTrash} />
-      </span>
-      <span className="item" onClick={() => console.log("Import Image")}>
-        <FontAwesomeIcon icon={faUpload} />
-      </span>
-      <span className="item" onClick={() => console.log("Open Snapshots Gallery")}>
-        <FontAwesomeIcon icon={faEye} />
-      </span>
+      {tools.map((tool) => (
+        <span key={tool.toolIndex} className="item" onClick={() => handleToolModeChange(tool.toolIndex)} style={{ backgroundColor: activeTools[tool.toolIndex] ? "gray" : "" }}>
+          <FontAwesomeIcon icon={tool.icon} />
+        </span>
+      ))}
     </div>
   );
 }

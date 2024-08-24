@@ -1,11 +1,12 @@
 import { ellipse, Point, circle, line } from "../lib/Shapes.js";
-export function tryDraw(canvas, x, y, skipTrack = false) {
+export function tryDraw(canvas, width, height, setDataAt, x, y, skipTrack = false) {
+  alert("tryDraw in helper");
   if (isInCanvasBounds(canvas, x, y)) {
-    updateCanvasData(canvas, x, y);
-    renderPixel(canvas, x, y);
+    updateCanvasData(canvas, setDataAt, x, y);
+    renderPixel(canvas, x, y, width, height);
 
     if (!skipTrack) {
-      trackSteps(canvas, x, y);
+      //trackSteps(canvas, x, y);
     }
   }
 }
@@ -14,22 +15,27 @@ export function isInCanvasBounds(canvas, x, y) {
   return x >= 0 && x < canvas.width && y >= 0 && y < canvas.height;
 }
 
-export function updateCanvasData(canvas, x, y) {
-  canvas.data[x][y] = canvas.color;
+export function updateCanvasData(canvas, setDataAt, x, y) {
+  alert("updating canvas data");
+  setDataAt(x, y, canvas.color);
 }
 
-export function renderPixel(canvas, x, y) {
-  const renderPixelWidth = Math.floor(canvas.canvas.width / canvas.width);
-  const renderPixelHeight = Math.floor(canvas.canvas.height / canvas.height);
+export function renderPixel(canvas, x, y, width, height) {
+  alert("rendering pixel");
+  const renderPixelWidth = Math.floor(canvas.width / width);
+  const renderPixelHeight = Math.floor(canvas.height / height);
 
   const renderX = Math.floor(x * renderPixelWidth);
   const renderY = Math.floor(y * renderPixelHeight);
 
-  canvas.ctx.fillRect(renderX, renderY, renderPixelWidth, renderPixelHeight);
+  let ctx = canvas.getContext("2d");
+  ctx.fillRect(renderX, renderY, renderPixelWidth, renderPixelHeight);
 }
 
 export function trackSteps(canvas, x, y) {
-  const currentStep = [x, y, canvas.color, canvas.ctx.globalAlpha];
+  let ctx = canvas.getContext("2d");
+
+  const currentStep = [x, y, canvas.color, ctx.globalAlpha];
   if (canvas.redoStack.length === 0 || !isLastStepEqual(canvas, currentStep)) {
     canvas.redoStack.push(currentStep);
   }

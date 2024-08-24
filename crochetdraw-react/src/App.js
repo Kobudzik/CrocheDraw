@@ -10,6 +10,7 @@ import ColorPalette from "./components/ColorPalette";
 function App() {
   const [showNewProjectPopup, setShowNewProjectPopup] = useState(false);
   const [showSnapshots, setShowSnapshots] = useState(false);
+  const [activeColor, setActiveColor] = useState(null);
   const [activeTools, setActiveTools] = useState([true, false, false, false, false, false]);
   const [availableColors, setAvailableColors] = useState([]);
 
@@ -64,10 +65,9 @@ function App() {
       <Menu onNewProject={handleNewProject} onExportAsImage={handleExportAsImage} onInstall={handleInstall} />
       {showNewProjectPopup && <NewProjectPopup onClose={() => setShowNewProjectPopup(false)} />}
       {showSnapshots && <SnapshotsGallery onClose={() => setShowSnapshots(false)} />}
-      <Canvas activeTools={activeTools} />
-      <Toolbar />
-      <ColorPalette colors={availableColors} />
-      <div id="palette"></div>
+      <Toolbar activeTools={activeTools} setActiveTools={setActiveTools} />
+      <ColorPalette colors={availableColors} onColorChange={setActiveColor} activeColor={activeColor} />
+      <Canvas activeTools={activeTools} activeColor={activeColor} setActiveColor={setActiveColor} width={200} height={200} />
     </div>
   );
 }

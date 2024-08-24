@@ -6,15 +6,26 @@ import SnapshotsManager from "../utils/SnapshotsManager.js";
 import { drawLine, drawCircle, drawEllipse, tryDraw } from "../utils/drawHelper.js";
 import { Point } from "../lib/Shapes.js";
 
-const Canvas = ({ width, height, activeTools }) => {
+const Canvas = ({ width, height, activeTools, activeColor, setActiveColor }) => {
   const canvasRef = useRef(null);
-  const [color, setColor] = useState([255, 255, 255, 255]);
   const [active, setActive] = useState(false);
+  const [data, setData] = useState([]);
   const [drawLineCoordinates, setDrawLineCoordinates] = useState([]);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const snapshotsManager = new SnapshotsManager();
-  const data = [];
+
+  const setDataAt = (x, y, value) => {
+    const newData = data.map((row) => [...row]);
+
+    if (!newData[x]) {
+      newData[x] = [];
+    }
+
+    newData[x][y] = value;
+    console.log("setting data value", newData[x][y]);
+    setData(newData);
+  };
 
   useEffect(() => {
     const canvasElement = canvasRef.current;
@@ -29,6 +40,8 @@ const Canvas = ({ width, height, activeTools }) => {
       ctx.fillStyle = "white";
       ctx.globalAlpha = 1;
       ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+
+      setData([...Array(width)].map(() => Array(height).fill([255, 255, 255, 255])));
     };
 
     setupCanvas();
@@ -41,6 +54,8 @@ const Canvas = ({ width, height, activeTools }) => {
     };
 
     const handleClick = (e) => {
+      alert("handling click");
+
       const { x, y } = calculateCanvasCoordinates(e.clientX, e.clientY);
       if (activeTools[AvailableTools.fillBucket]) {
         bucketFill(canvasRef.current, x, y, data[x][y]);
@@ -53,7 +68,7 @@ const Canvas = ({ width, height, activeTools }) => {
       } else if (activeTools[AvailableTools.ellipse]) {
         drawEllipse(canvasRef.current, x, y);
       } else {
-        tryDraw(canvasRef.current, x, y);
+        tryDraw(canvasRef.current, width, height, setDataAt, x, y);
       }
     };
 
@@ -75,17 +90,18 @@ const Canvas = ({ width, height, activeTools }) => {
       canvasElement.removeEventListener("mousedown", () => setActive(true));
       canvasElement.removeEventListener("mouseup", () => setActive(false));
     };
-  }, [activeTools]);
+  }, []);
 
   const calculateCanvasCoordinates = (clientX, clientY) => {
-    const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    const x = Math.floor((width * (clientX - rect.left)) / canvas.clientWidth);
-    const y = Math.floor((height * (clientY - rect.top)) / canvas.clientHeight);
+    const canvasElement = canvasRef.current;
+    const rect = canvasElement.getBoundingClientRect();
+    const x = Math.floor((width * (clientX - rect.left)) / canvasElement.clientWidth);
+    const y = Math.floor((height * (clientY - rect.top)) / canvasElement.clientHeight);
     return { x, y };
   };
 
   const handleToolAction = (x, y) => {
+    alert("hnalding tool action");
     if (activeTools[AvailableTools.pen]) {
       tryDraw(canvasRef.current, x, y);
     } else if (activeTools[AvailableTools.eraser]) {
@@ -105,11 +121,11 @@ const Canvas = ({ width, height, activeTools }) => {
   };
 
   const erase = (x, y) => {
-    const tempColor = color;
+    const tempColor = activeColor;
     const tempAlpha = canvasRef.current.getContext("2d").globalAlpha;
-    setColor([255, 255, 255, 255]);
+    setActiveColor([255, 255, 255, 255]);
     tryDraw(canvasRef.current, x, y);
-    setColor(tempColor);
+    setActiveColor(tempColor);
     canvasRef.current.getContext("2d").globalAlpha = tempAlpha;
   };
 
@@ -118,7 +134,7 @@ const Canvas = ({ width, height, activeTools }) => {
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    setColor([255, 255, 255, 255]);
+    setActiveColor([255, 255, 255, 255]);
     //setToolmode(AvailableTools.pen); pass callback and call it
   };
 
@@ -130,7 +146,7 @@ const Canvas = ({ width, height, activeTools }) => {
     }
     setUndoStack((prev) => [...prev, redoStack.pop()]);
     redoStack.forEach((step) => {
-      setColor(step[2]);
+      setActiveColor(step[2]);
       canvasRef.current.getContext("2d").globalAlpha = step[3];
       tryDraw(step[0], step[1], true);
     });
@@ -143,20 +159,19 @@ const Canvas = ({ width, height, activeTools }) => {
     }
     setRedoStack((prev) => [...prev, undoStack.pop()]);
     redoStack.forEach((step) => {
-      setColor(step[2]);
+      setActiveColor(step[2]);
       canvasRef.current.getContext("2d").globalAlpha = step[3];
       tryDraw(step[0], step[1], true);
     });
   };
 
   const replaceCanvasWithOther = (canvasContext) => {
-    const canvas = canvasRef.current;
     for (let i = 0; i < width; i++) {
       for (let j = 0; j < height; j++) {
         const pixelData = canvasContext.getImageData(10 * i, 10 * j, 10, 10).data;
         const avgColor = calculateAverageColor(pixelData);
 
-        setColor(avgColor);
+        setActiveColor(avgColor);
         tryDraw(canvasRef.current, i, j);
       }
     }
@@ -166,22 +181,22 @@ const Canvas = ({ width, height, activeTools }) => {
     clearCanvas();
     const img = snapshotsManager.getSnapshot(index)[1];
 
-    const tmpColor = color;
+    const tmpColor = activeColor;
     const tmpAlpha = canvasRef.current.getContext("2d").globalAlpha;
     canvasRef.current.getContext("2d").globalAlpha = 1;
 
     for (let i = 0; i < width; i++) {
       for (let j = 0; j < height; j++) {
-        setColor(img[i][j]);
+        setActiveColor(img[i][j]);
         tryDraw(canvasRef.current, i, j);
       }
     }
 
-    setColor(tmpColor);
+    setActiveColor(tmpColor);
     canvasRef.current.getContext("2d").globalAlpha = tmpAlpha;
   };
 
-  return <canvas ref={canvasRef} />;
+  return <canvas ref={canvasRef} id="canvas" />;
 };
 
 export default Canvas;
