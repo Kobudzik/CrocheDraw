@@ -12,14 +12,9 @@ export const AvailableTools = {
 };
 
 /**
- * Array representing the current active state of each tool.
- */
-export var activeTools = [true, false, false, false, false, false];
-
-/**
  * Sets the current tool mode and updates the toolbar UI.
  */
-export function setToolmode(i) {
+export function setToolmode(activeTools, i) {
   activeTools.fill(false);
   activeTools[i] = true;
 

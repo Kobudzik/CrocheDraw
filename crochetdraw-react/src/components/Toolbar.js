@@ -1,48 +1,50 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencilAlt, faEraser, faFill, faSlash, faPlus, faUndo, faRedo, faTrash, faUpload, faEye } from "@fortawesome/free-solid-svg-icons";
+import { faCircle } from "@fortawesome/free-regular-svg-icons";
 
 function Toolbar({ board }) {
   const handleToolModeChange = (mode) => {
-    // Your setToolmode logic
     console.log(`Tool mode changed to: ${mode}`);
   };
 
   return (
     <div id="toolbar">
       <span className="item" onClick={() => handleToolModeChange(0)} style={{ backgroundColor: "grey" }}>
-        <i className="fas fa-pencil-alt"></i>
+        <FontAwesomeIcon icon={faPencilAlt} />
       </span>
       <span className="item" onClick={() => handleToolModeChange(1)}>
-        <i className="fas fa-eraser"></i>
+        <FontAwesomeIcon icon={faEraser} />
       </span>
       <span className="item" onClick={() => handleToolModeChange(2)}>
-        <i className="fas fa-fill"></i>
+        <FontAwesomeIcon icon={faFill} />
       </span>
       <span className="item" onClick={() => handleToolModeChange(3)}>
-        <i className="fas fa-slash"></i>
+        <FontAwesomeIcon icon={faSlash} />
       </span>
       <span className="item" onClick={() => handleToolModeChange(4)}>
-        <i className="far fa-circle"></i>
+        <FontAwesomeIcon icon={faCircle} />
       </span>
       <span className="item" onClick={() => handleToolModeChange(5)}>
-        <i className="far fa-circle" style={{ transform: "rotateX(45deg)" }}></i>
+        <FontAwesomeIcon icon={faCircle} style={{ transform: "rotateX(45deg)" }} />
       </span>
       <span className="item" onClick={() => board.snapshotsManager.addSnapshot(board.data, board.ctx)}>
-        <i className="fas fa-plus"></i>
+        <FontAwesomeIcon icon={faPlus} />
       </span>
       <span className="item" onClick={() => board.undo()}>
-        <i className="fas fa-undo"></i>
+        <FontAwesomeIcon icon={faUndo} />
       </span>
       <span className="item" onClick={() => board.redo()}>
-        <i className="fas fa-redo"></i>
+        <FontAwesomeIcon icon={faRedo} />
       </span>
       <span className="item" onClick={() => board.clearCanvas()}>
-        <i className="fas fa-trash"></i>
+        <FontAwesomeIcon icon={faTrash} />
       </span>
       <span className="item" onClick={() => console.log("Import Image")}>
-        <i className="fa fa-upload"></i>
+        <FontAwesomeIcon icon={faUpload} />
       </span>
       <span className="item" onClick={() => console.log("Open Snapshots Gallery")}>
-        <i className="fas fa-eye"></i>
+        <FontAwesomeIcon icon={faEye} />
       </span>
     </div>
   );

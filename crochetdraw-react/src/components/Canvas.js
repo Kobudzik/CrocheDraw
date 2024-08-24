@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
-import { AvailableTools, activeTools, setToolmode } from "../utils/Tools.js";
+import { AvailableTools, setToolmode } from "../utils/Tools.js";
 import { bucketFill } from "../utils/bucketFill.js";
 import { calculateAverageColor } from "../utils/utils.js";
 import SnapshotsManager from "../utils/SnapshotsManager.js";
 import { drawLine, drawCircle, drawEllipse, tryDraw } from "../utils/drawHelper.js";
 import { Point } from "../lib/Shapes.js";
 
-const Canvas = ({ width, height }) => {
+const Canvas = ({ width, height, activeTools }) => {
   const canvasRef = useRef(null);
   const [color, setColor] = useState([255, 255, 255, 255]);
   const [active, setActive] = useState(false);
@@ -20,17 +20,19 @@ const Canvas = ({ width, height }) => {
     const canvasElement = canvasRef.current;
     const ctx = canvasElement.getContext("2d");
 
-    canvasElement.style.display = "block";
-    canvasElement.style.height = Math.floor((height / width) * canvasElement.clientWidth) + "px";
+    const setupCanvas = () => {
+      canvasElement.style.display = "block";
+      canvasElement.style.height = Math.floor((height / width) * canvasElement.clientWidth) + "px";
+      canvasElement.width = 10 * width;
+      canvasElement.height = 10 * height;
 
-    canvasElement.width = 10 * width;
-    canvasElement.height = 10 * height;
+      ctx.fillStyle = "white";
+      ctx.globalAlpha = 1;
+      ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+    };
 
-    ctx.fillStyle = "white";
-    ctx.globalAlpha = 1;
-    ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+    setupCanvas();
 
-    // Event listeners
     const handleMouseMove = (e) => {
       if (active) {
         const { x, y } = calculateCanvasCoordinates(e.clientX, e.clientY);
@@ -70,8 +72,10 @@ const Canvas = ({ width, height }) => {
       canvasElement.removeEventListener("mousemove", handleMouseMove);
       canvasElement.removeEventListener("click", handleClick);
       canvasElement.removeEventListener("touchmove", handleTouchMove);
+      canvasElement.removeEventListener("mousedown", () => setActive(true));
+      canvasElement.removeEventListener("mouseup", () => setActive(false));
     };
-  }, [active, color, drawLineCoordinates, undoStack, redoStack]);
+  }, [activeTools]);
 
   const calculateCanvasCoordinates = (clientX, clientY) => {
     const canvas = canvasRef.current;
@@ -115,7 +119,7 @@ const Canvas = ({ width, height }) => {
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     setColor([255, 255, 255, 255]);
-    setToolmode(AvailableTools.pen);
+    //setToolmode(AvailableTools.pen); pass callback and call it
   };
 
   const undo = () => {
