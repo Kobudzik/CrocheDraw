@@ -1,5 +1,5 @@
 import { Canvas } from "./components/Canvas.js";
-import { newProject, loadProject } from "./helpers/utils.js";
+import { newProject, loadProject, saveInLocal } from "./helpers/utils.js";
 
 window.onload = function () {
   let canvasData = localStorage.getItem("pc-canvas-data");
@@ -43,7 +43,7 @@ document.querySelector(".menubtn").onclick = function () {
 };
 
 window.onbeforeunload = function () {
-  board.saveInLocal();
+  saveInLocal(board);
   return "Data will be lost if you leave the page, are you sure?";
 };
 

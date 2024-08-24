@@ -252,16 +252,6 @@ export class Canvas {
     });
   }
 
-  exportAsImage() {
-    this.canvas.toBlob((blob) => {
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.download = "canvas.png";
-      link.href = url;
-      link.click();
-    });
-  }
-
   clearCanvas() {
     this.ctx.fillStyle = "white";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -301,23 +291,6 @@ export class Canvas {
 
       this.tryDraw(step[0], step[1], true);
     });
-  }
-
-  /**
-   * Saves the current canvas state in local storage for later retrieval.
-   */
-  saveInLocal() {
-    const currentData = {
-      colors: window.colors,
-      currColor: this.color,
-      width: this.width,
-      height: this.height,
-      url: this.canvas.toDataURL(),
-      steps: this.redoStack,
-      redo_arr: this.undoStack,
-      dim: window.dim,
-    };
-    localStorage.setItem("pc-canvas-data", JSON.stringify(currentData));
   }
 
   replaceCanvasWithOther(canvasContext) {

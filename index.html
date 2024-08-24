@@ -12,7 +12,7 @@
 
     <script type="module">
       import { newProject } from "./src/helpers/utils.js";
-      import { setActiveColor } from "./src/helpers/utils.js";
+      import { setActiveColor, exportAsImage } from "./src/helpers/utils.js";
       import { SnapshotsGallery } from "./src/components/SnapshotsGallery.js";
       import { handleImportImage } from "./src/helpers/imageImportHelper.js";
 
@@ -20,6 +20,7 @@
       window.newProject = newProject;
       window.setActiveColor = setActiveColor;
       window.handleImportImage = handleImportImage;
+      window.exportAsImage = exportAsImage;
 
       //objects
       window.snapshotsGallery = SnapshotsGallery;
@@ -30,7 +31,7 @@
     <div class="menubtn">☰</div>
     <ul class="menu">
       <li onclick="newProject()">New</li>
-      <li onclick="board.exportAsImage()">Export image</li>
+      <li onclick="exportAsImage(board.canvas)">Export image</li>
       <li onclick="install()">Install PWA</li>
       <li>
         <a href="https://github.com/rainboestrykr/pixellate" target="_blank">

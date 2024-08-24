@@ -69,3 +69,30 @@ export function calculateAverageColor(pixelData) {
 
   return avgColor.map((value) => Math.floor(value / count));
 }
+
+export function exportAsImage(htmlCanvas) {
+  htmlCanvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = "canvas.png";
+    link.href = url;
+    link.click();
+  });
+}
+
+/**
+ * Saves the current canvas state in local storage for later retrieval.
+ */
+export function saveInLocal(canvasObject) {
+  const currentData = {
+    colors: window.colors,
+    currColor: canvasObject.color,
+    width: canvasObject.width,
+    height: canvasObject.height,
+    url: canvasObject.canvas.toDataURL(),
+    steps: canvasObject.redoStack,
+    redo_arr: canvasObject.undoStack,
+    dim: window.dim,
+  };
+  localStorage.setItem("pc-canvas-data", JSON.stringify(currentData));
+}
