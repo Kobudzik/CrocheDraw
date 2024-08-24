@@ -13,7 +13,7 @@
     <script type="module">
       import { newProject } from "./src/helpers/utils.js";
       import { setActiveColor } from "./src/helpers/utils.js";
-      import { Snapshots } from "./src/components/Snapshots.js";
+      import { SnapshotsGallery } from "./src/components/SnapshotsGallery.js";
       import { handleImportImage } from "./src/helpers/imageImportHelper.js";
 
       //methods
@@ -22,7 +22,7 @@
       window.handleImportImage = handleImportImage;
 
       //objects
-      window.snapshots = Snapshots;
+      window.snapshotsGallery = SnapshotsGallery;
     </script>
   </head>
 
@@ -46,7 +46,7 @@
       <input type="text" id="height" value="16" />
       <button id="close">OK</button>
     </div>
-    <div id="snapshots" onblur="snapshots.close()" tabindex="0">
+    <div id="snapshots" onblur="snapshotsGallery.close()" tabindex="0">
       <p>Left click to select, right click to remove.</p>
       <div class="btn" style="left: 10px" onclick="document.querySelector('#snapshots #gallery').scrollLeft-=100;">
         <i class="fa fa-chevron-left"></i>
@@ -76,7 +76,7 @@
       <span class="item" onclick="board.setmode(5)">
         <i class="far fa-circle" style="transform: rotateX(45deg)"></i>
       </span>
-      <span class="item" onclick="board.addSnapshot()">
+      <span class="item" onclick="board.snapshotsManager.addSnapshot(board.data, board.ctx)">
         <i class="fas fa-plus"></i>
       </span>
       <span class="item" onclick="board.undo()">
@@ -91,7 +91,7 @@
       <span class="item" onclick="window.handleImportImage(board)">
         <i class="fa fa-upload"></i>
       </span>
-      <span class="item" onclick="snapshots.open()">
+      <span class="item" onclick="snapshotsGallery.open()">
         <i class="fas fa-eye"></i>
       </span>
     </div>

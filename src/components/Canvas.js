@@ -1,6 +1,7 @@
 import { AvailableTools, activeTools } from "./Tools.js";
 import { bucketFill } from "../helpers/bucketFill.js";
 import { calculateAverageColor } from "../helpers/utils.js";
+import SnapshotsManager from "./SnapshotsManager.js";
 
 /**
  * The Canvas class represents the drawing canvas within the application.
@@ -30,10 +31,11 @@ export class Canvas {
 
     this.redoStack = [];
     this.undoStack = [];
-    this.snapshots = [];
     this.drawLineCoordinates = [];
 
     this.setupEventListeners();
+
+    this.snapshotsManager = new SnapshotsManager();
   }
 
   /**
@@ -331,24 +333,16 @@ export class Canvas {
   }
 
   //#region snapshots
-  addSnapshot(data = null) {
-    const img = new Image();
-    img.src = data || this.canvas.toDataURL();
-    this.snapshots.push([img, this.data.map((inner) => inner.slice())]);
-  }
-
-  deleteSnapshot(f) {
-    this.snapshots.splice(f, 1);
-  }
-
   /**
    * Loads a specific frame and redraws it on the canvas.
    *
-   * @param {number} f - The index of the frame to load.
+   * @param {number} index - The index of the frame to load.
    */
-  loadSnapshot(f) {
+  loadSnapshot(index) {
     this.clearCanvas();
-    const img = this.snapshots[f][1];
+
+    const img = this.snapshotsManager.getSnapshot(index)[1];
+
     const tmp_color = this.color;
     const tmp_alpha = this.ctx.globalAlpha;
     this.ctx.globalAlpha = 1;
